@@ -9,6 +9,7 @@ Project ini dibuat sebagai pondasi awal yang rapi, mudah dikembangkan, dan mendu
 - Vite
 - React 19
 - TypeScript
+- Tailwind CSS
 - ESLint
 
 ## Cara Menjalankan
@@ -64,6 +65,16 @@ Gunakan alur kerja ini agar codebase tetap konsisten.
 5. Simpan helper murni tanpa ketergantungan React ke `utils`.
 6. Simpan request API, adapter data, atau pemanggilan backend di `services`.
 7. Simpan type global atau shared interface di `types`.
+8. Gunakan Tailwind CSS sebagai styling utama, bukan CSS selector per halaman kecuali benar-benar perlu untuk base/global layer.
+
+## Workflow Styling
+
+Project ini sekarang memakai Tailwind CSS sebagai pendekatan styling utama.
+
+1. Tulis styling sedekat mungkin dengan komponen lewat utility classes.
+2. Pakai `src/index.css` hanya untuk base style global atau layer kecil yang memang shared.
+3. Hindari menambah file CSS baru untuk komponen biasa jika masih bisa ditangani dengan utility class.
+4. Kalau ada pola class yang sering terulang, ekstrak jadi reusable component, bukan copy-paste markup terus-menerus.
 
 ## Aturan Reusable Component
 
@@ -129,8 +140,9 @@ Saat ini project sudah berisi:
 
 1. Scaffold Vite React TypeScript.
 2. Struktur folder awal untuk scale up.
-3. Layout dasar dan contoh reusable component.
-4. README workflow untuk pengembangan berikutnya.
+3. Tailwind CSS sebagai styling utama.
+4. Layout dasar dan contoh reusable component.
+5. README workflow untuk pengembangan berikutnya.
 
 ## Next Step yang Cocok
 
