@@ -6,8 +6,7 @@
   }
 
   body {
-    @apply min-w-80 bg-slate-950 text-slate-200 antialiased;
-    background-image: radial-gradient(circle at top, #123056 0%, #071120 52%, #04080f 100%);
+    @apply min-w-80 bg-white text-slate-900 antialiased;
   }
 
   a {
