@@ -1,10 +1,10 @@
 import { AppLayout } from './layouts/AppLayout'
-import { HomePage } from './pages'
+import { UsersPage } from './pages'
 
 function App() {
   return (
     <AppLayout>
-      <HomePage />
+      <UsersPage />
     </AppLayout>
   )
 }
