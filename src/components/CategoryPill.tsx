@@ -1,21 +1,25 @@
 import type { ReactNode } from 'react'
 
+import { categoryPillStyles } from './config/category-pill'
+import { tokens } from '../config/tokens'
+
 type CategoryPillProps = {
   active?: boolean
   children: ReactNode
 }
 
 export function CategoryPill({ active = false, children }: CategoryPillProps) {
-  const className = active
-    ? 'border-[#E2E8F0] bg-[#1AA86E] text-[#FFFFFF]'
-    : 'border-[#E2E8F0] bg-[#F1F5F9] text-[#64748B]'
+  const styles = active ? categoryPillStyles.active : categoryPillStyles.inactive
 
   return (
     <span
       className={[
         'inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium',
-        className,
       ].join(' ')}
+      style={{
+        borderRadius: tokens.radius.full,
+        ...styles,
+      }}
     >
       {children}
     </span>

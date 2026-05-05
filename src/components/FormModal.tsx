@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 
 import { Button } from './Button'
+import { inputConfig } from './config/input'
+import { surfaceConfig } from './config/surface'
+import { tokens } from '../config/tokens'
 
 type FormModalProps = {
   title: string
@@ -10,17 +13,18 @@ type FormModalProps = {
 
 export function FormModal({ title, description, children }: FormModalProps) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6">
+    <section className="bg-white p-6" style={{ ...surfaceConfig.card }}>
+      <div className="mx-auto max-w-xl bg-white p-6" style={{ ...surfaceConfig.card }}>
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-            {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
+            <h2 className="text-xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</h2>
+            {description ? <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[600] }}>{description}</p> : null}
           </div>
 
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border"
+            style={{ borderColor: tokens.colors.slate[200], color: tokens.colors.slate[500] }}
             aria-label="Close modal"
           >
             x
@@ -31,19 +35,21 @@ export function FormModal({ title, description, children }: FormModalProps) {
           {children}
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Name</label>
+            <label className="mb-2 block text-sm font-medium" style={{ color: tokens.colors.slate[700] }}>Name</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none placeholder:text-slate-400"
+              className="w-full px-4 py-3 outline-none"
+              style={{ ...inputConfig.fieldStyle, borderRadius: tokens.radius.sm }}
               placeholder="Input name"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Email</label>
+            <label className="mb-2 block text-sm font-medium" style={{ color: tokens.colors.slate[700] }}>Email</label>
             <input
               type="email"
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none placeholder:text-slate-400"
+              className="w-full px-4 py-3 outline-none"
+              style={{ ...inputConfig.fieldStyle, borderRadius: tokens.radius.sm }}
               placeholder="Input email"
             />
           </div>

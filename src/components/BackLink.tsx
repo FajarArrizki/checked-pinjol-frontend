@@ -1,5 +1,8 @@
 import type { MouseEventHandler } from 'react'
 
+import { backLinkConfig } from './config/back-link'
+import { tokens } from '../config/tokens'
+
 type BackLinkProps = {
   toLabel: string
   href?: string
@@ -7,14 +10,19 @@ type BackLinkProps = {
 }
 
 const baseClassName =
-  'inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition-colors hover:bg-slate-50'
+  'inline-flex items-center gap-3 border bg-white px-3 py-2 text-left shadow-sm transition-colors hover:bg-slate-50'
 
-const iconClassName = 'flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600'
+const iconClassName = 'flex h-9 w-9 items-center justify-center'
 
 function BackContent({ toLabel }: Pick<BackLinkProps, 'toLabel'>) {
   return (
     <>
-      <span className={iconClassName}>
+      <span
+        className={iconClassName}
+        style={{
+          ...backLinkConfig.icon,
+        }}
+      >
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -27,7 +35,7 @@ function BackContent({ toLabel }: Pick<BackLinkProps, 'toLabel'>) {
         </svg>
       </span>
 
-      <span className="text-sm font-medium text-slate-900">Kembali ke {toLabel}</span>
+      <span className="text-sm font-medium" style={{ color: tokens.colors.slate[900] }}>Kembali ke {toLabel}</span>
     </>
   )
 }
@@ -35,14 +43,30 @@ function BackContent({ toLabel }: Pick<BackLinkProps, 'toLabel'>) {
 export function BackLink({ toLabel, href, onClick }: BackLinkProps) {
   if (href) {
     return (
-      <a href={href} onClick={onClick} className={baseClassName}>
+      <a
+        href={href}
+        onClick={onClick}
+        className={baseClassName}
+        style={{
+          ...backLinkConfig.button,
+          borderRadius: tokens.radius.full,
+        }}
+      >
         <BackContent toLabel={toLabel} />
       </a>
     )
   }
 
   return (
-    <button type="button" onClick={onClick} className={baseClassName}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={baseClassName}
+      style={{
+        ...backLinkConfig.button,
+        borderRadius: tokens.radius.full,
+      }}
+    >
       <BackContent toLabel={toLabel} />
     </button>
   )

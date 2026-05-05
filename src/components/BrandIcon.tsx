@@ -1,7 +1,17 @@
+import { tokens } from '../config/tokens'
+
 export function BrandIcon() {
   return (
     <div className="inline-flex items-center gap-3">
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#1AA86E] bg-[#D9F5E9] text-[#1AA86E]">
+      <span
+        className="flex h-11 w-11 items-center justify-center border text-[#1AA86E]"
+        style={{
+          borderRadius: tokens.radius.sm,
+          borderColor: tokens.colors.brand.primary,
+          backgroundColor: tokens.colors.brand.soft,
+          color: tokens.colors.brand.primary,
+        }}
+      >
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -18,7 +28,7 @@ export function BrandIcon() {
         </svg>
       </span>
 
-      <span className="text-base font-semibold text-[#000000]">CheckedPinjol</span>
+      <span style={{ color: tokens.colors.black }} className="text-base font-semibold">CheckedPinjol</span>
     </div>
   )
 }

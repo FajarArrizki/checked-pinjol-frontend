@@ -1,4 +1,5 @@
 import { Button } from './Button'
+import { tokens } from '../config/tokens'
 
 type ReportRejectedModalProps = {
   title: string
@@ -7,9 +8,12 @@ type ReportRejectedModalProps = {
 
 export function ReportRejectedModal({ title, description }: ReportRejectedModalProps) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center">
-        <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FEE2E2] text-[#DC2626]">
+    <section className="border bg-white p-6 shadow-sm" style={{ borderRadius: tokens.radius.lg, borderColor: tokens.colors.slate[200], boxShadow: tokens.shadow.sm }}>
+      <div className="mx-auto max-w-md border bg-white p-6 text-center" style={{ borderRadius: tokens.radius.lg, borderColor: tokens.colors.slate[200] }}>
+        <span
+          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full"
+          style={{ backgroundColor: tokens.colors.danger.soft, color: tokens.colors.danger.base }}
+        >
           <svg
             aria-hidden="true"
             viewBox="0 0 24 24"
@@ -22,8 +26,8 @@ export function ReportRejectedModal({ title, description }: ReportRejectedModalP
           </svg>
         </span>
 
-        <h2 className="mt-4 text-xl font-semibold text-slate-900">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+        <h2 className="mt-4 text-xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</h2>
+        <p className="mt-2 text-sm leading-6" style={{ color: tokens.colors.slate[600] }}>{description}</p>
 
         <div className="mt-6 flex justify-center gap-3">
           <Button variant="secondary">Kembali</Button>

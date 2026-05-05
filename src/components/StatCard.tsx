@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react'
 
+import { surfaceConfig } from './config/surface'
+import { tokens } from '../config/tokens'
+
 type StatCardProps = {
   label: string
   value: string | number
@@ -18,16 +21,16 @@ export function StatCard({
   className = '',
 }: StatCardProps) {
   return (
-    <div className={`rounded-2xl border border-slate-200 bg-white p-5 flex flex-col gap-3 ${className}`}>
+    <div className={`flex flex-col gap-3 p-5 ${className}`} style={{ ...surfaceConfig.card }}>
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-500">{label}</span>
-        <span className="text-slate-400">{icon}</span>
+        <span className="text-sm" style={{ color: tokens.colors.slate[500] }}>{label}</span>
+        <span style={{ color: tokens.colors.slate[400] }}>{icon}</span>
       </div>
-      <span className="text-3xl font-semibold text-slate-900">{value}</span>
+      <span className="text-3xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{value}</span>
       {description && (
-        <p className="text-xs text-slate-400">
+        <p className="text-xs" style={{ color: tokens.colors.slate[400] }}>
           {descriptionHighlight && (
-            <span className="text-[#1D9E75] font-medium">{descriptionHighlight} </span>
+            <span className="font-medium" style={{ color: tokens.colors.brand.primary }}>{descriptionHighlight} </span>
           )}
           {description}
         </p>

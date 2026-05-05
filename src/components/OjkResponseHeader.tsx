@@ -1,3 +1,6 @@
+import { surfaceConfig } from './config/surface'
+import { tokens } from '../config/tokens'
+
 type OjkResponseHeaderProps = {
   name: string
   respondedAt: string
@@ -7,7 +10,13 @@ type OjkResponseHeaderProps = {
 export function OjkResponseHeader({ name, respondedAt, imageUrl }: OjkResponseHeaderProps) {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-slate-600">
+      <span
+        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full"
+        style={{
+          ...surfaceConfig.softBadge,
+          borderRadius: tokens.radius.full,
+        }}
+      >
         {imageUrl ? (
           <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
         ) : (
@@ -29,8 +38,8 @@ export function OjkResponseHeader({ name, respondedAt, imageUrl }: OjkResponseHe
       </span>
 
       <div>
-        <p className="text-sm font-semibold text-slate-900">{name}</p>
-        <p className="mt-1 text-sm text-slate-500">{respondedAt}</p>
+        <p className="text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{name}</p>
+        <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[500] }}>{respondedAt}</p>
       </div>
     </div>
   )

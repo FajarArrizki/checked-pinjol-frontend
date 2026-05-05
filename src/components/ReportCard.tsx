@@ -1,4 +1,6 @@
 import { StatusPill } from './StatusPill'
+import { surfaceConfig } from './config/surface'
+import { tokens } from '../config/tokens'
 
 type ReportStatus = 'process' | 'selesai' | 'terminate'  // ← sesuaikan ini
 
@@ -23,18 +25,20 @@ export function ReportCard({
     <div
       onClick={onClick}
       className={`
-        rounded-2xl border border-slate-200 bg-white p-5
         flex flex-col gap-3 cursor-pointer
-        hover:border-slate-300 hover:shadow-sm transition-all
+        transition-all hover:bg-slate-50
         ${className}
       `.trim()}
+      style={{
+        ...surfaceConfig.card,
+      }}
     >
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-slate-900">{appName}</h3>
-        <p className="text-sm text-slate-500 line-clamp-1">{description}</p>
+        <h3 className="text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{appName}</h3>
+        <p className="text-sm line-clamp-1" style={{ color: tokens.colors.slate[500] }}>{description}</p>
       </div>
       <StatusPill status={status} />
-      <span className="text-xs text-slate-400">{date}</span>
+      <span className="text-xs" style={{ color: tokens.colors.slate[400] }}>{date}</span>
     </div>
   )
 }

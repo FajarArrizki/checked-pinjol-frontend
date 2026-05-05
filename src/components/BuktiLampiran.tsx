@@ -1,3 +1,6 @@
+import { surfaceConfig } from './config/surface'
+import { tokens } from '../config/tokens'
+
 type BuktiLampiranProps = {
   title: string
   size: string
@@ -6,8 +9,20 @@ type BuktiLampiranProps = {
 
 export function BuktiLampiran({ title, size, imageUrl }: BuktiLampiranProps) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 text-slate-500">
+    <div
+      className="flex items-center gap-4 p-4"
+      style={{
+        ...surfaceConfig.card,
+      }}
+    >
+      <span
+        className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border"
+        style={{
+          ...surfaceConfig.subtle,
+          backgroundColor: tokens.colors.slate[50],
+          color: tokens.colors.slate[500],
+        }}
+      >
         {imageUrl ? (
           <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
         ) : (
@@ -31,8 +46,8 @@ export function BuktiLampiran({ title, size, imageUrl }: BuktiLampiranProps) {
       </span>
 
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-slate-900">{title}</p>
-        <p className="mt-1 text-sm text-slate-500">{size}</p>
+        <p className="truncate text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</p>
+        <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[500] }}>{size}</p>
       </div>
     </div>
   )

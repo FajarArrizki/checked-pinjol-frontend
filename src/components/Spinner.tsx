@@ -1,20 +1,15 @@
-// src/components/Spinner.tsx
+import { spinnerSizeClass, spinnerStyle } from './config/spinner'
 
 type SpinnerProps = {
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }
 
-const sizeClass = {
-  sm: 'w-4 h-4',
-  md: 'w-6 h-6',
-  lg: 'w-8 h-8',
-}
-
 export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
   return (
     <svg
-      className={`animate-spin text-[#1D9E75] ${sizeClass[size]} ${className}`}
+      className={`animate-spin ${spinnerSizeClass[size]} ${className}`}
+      style={{ color: spinnerStyle.color }}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

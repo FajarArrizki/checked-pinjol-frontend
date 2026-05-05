@@ -1,3 +1,6 @@
+import { profileTriggerConfig } from './config/profile-trigger'
+import { tokens } from '../config/tokens'
+
 type ProfileTriggerProps = {
   username: string
 }
@@ -6,9 +9,17 @@ export function ProfileTrigger({ username }: ProfileTriggerProps) {
   return (
     <button
       type="button"
-      className="inline-flex min-h-11 items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition-colors hover:bg-slate-50"
+      className="inline-flex min-h-11 items-center gap-3 border bg-white px-3 py-2 text-left shadow-sm transition-colors hover:bg-slate-50"
+      style={{
+        ...profileTriggerConfig.button,
+      }}
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+      <span
+        className="flex h-9 w-9 items-center justify-center rounded-full"
+        style={{
+          ...profileTriggerConfig.avatar,
+        }}
+      >
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -25,13 +36,14 @@ export function ProfileTrigger({ username }: ProfileTriggerProps) {
         </svg>
       </span>
 
-      <span className="text-sm font-medium text-slate-900">{username}</span>
+      <span className="text-sm font-medium" style={{ color: tokens.colors.slate[900] }}>{username}</span>
 
       <svg
         aria-hidden="true"
         viewBox="0 0 20 20"
         fill="currentColor"
-        className="h-4 w-4 text-slate-500"
+        className="h-4 w-4"
+        style={{ color: tokens.colors.slate[500] }}
       >
         <path
           fillRule="evenodd"

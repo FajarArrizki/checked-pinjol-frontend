@@ -1,3 +1,5 @@
+import { tokens } from '../config/tokens'
+
 type PhotoUploadCardProps = {
   description: string
 }
@@ -6,9 +8,21 @@ export function PhotoUploadCard({ description }: PhotoUploadCardProps) {
   return (
     <button
       type="button"
-      className="flex min-h-48 w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center shadow-sm transition-colors hover:bg-slate-50"
+      className="flex min-h-48 w-full flex-col items-center justify-center gap-4 border border-dashed bg-white p-6 text-center transition-colors hover:bg-slate-50"
+      style={{
+        borderRadius: tokens.radius.lg,
+        borderColor: tokens.colors.slate[300],
+        boxShadow: tokens.shadow.sm,
+      }}
     >
-      <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-600">
+      <span
+        className="flex h-16 w-16 items-center justify-center"
+        style={{
+          borderRadius: tokens.radius.lg,
+          backgroundColor: tokens.colors.slate[100],
+          color: tokens.colors.slate[600],
+        }}
+      >
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -25,7 +39,7 @@ export function PhotoUploadCard({ description }: PhotoUploadCardProps) {
         </svg>
       </span>
 
-      <p className="max-w-xs text-sm leading-6 text-slate-500">{description}</p>
+      <p className="max-w-xs text-sm leading-6" style={{ color: tokens.colors.slate[500] }}>{description}</p>
     </button>
   )
 }
