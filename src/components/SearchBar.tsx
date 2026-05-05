@@ -6,10 +6,12 @@ type SearchBarProps = InputHTMLAttributes<HTMLInputElement> & {
 
 export function SearchBar({ className = '', ...props }: SearchBarProps) {
   return (
-    <div className={`relative w-full max-w-xs ${className}`}>
-      <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+    <div
+      className={`flex h-10 w-full max-w-xs items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 transition-colors focus-within:border-transparent focus-within:ring-2 focus-within:ring-slate-900 ${className}`.trim()}
+    >
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center text-slate-400">
         <svg
-          className="w-4 h-4 text-slate-400"
+          className="h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -23,14 +25,10 @@ export function SearchBar({ className = '', ...props }: SearchBarProps) {
           />
         </svg>
       </span>
+
       <input
         type="search"
-        className={`
-          w-full rounded-xl border border-slate-300 bg-white
-          pl-9 pr-4 py-2 text-sm text-slate-900
-          placeholder:text-slate-400 transition-colors
-          focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent
-        `.trim()}
+        className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 outline-none"
         {...props}
       />
     </div>

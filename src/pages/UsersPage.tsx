@@ -1,12 +1,18 @@
 import {
+  ArticleCard,
   BackLink,
   Button,
   BuktiLampiran,
   CategoryPill,
   DeleteConfirmModal,
   FormModal,
+  Input,
   OjkResponseHeader,
   PaginationBar,
+  ReportCard,
+  SearchBar,
+  Spinner,
+  StatCard,
   StatusPill,
   TableList,
 } from '../components'
@@ -99,6 +105,83 @@ export function UsersPage() {
                 respondedAt="22 Februari 2026, 14:30 WIB"
                 imageUrl={heroImage}
               />
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900">Data & Content Components</h2>
+
+            <div className="mt-3 space-y-5">
+              <div className="grid gap-3 md:grid-cols-2">
+                <SearchBar placeholder="Cari artikel atau laporan" />
+                <Input label="Nama Pengguna" placeholder="Masukkan nama pengguna" />
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                <StatCard
+                  label="Total Pengaduan"
+                  value="128"
+                  description="dibanding minggu lalu"
+                  descriptionHighlight="+12%"
+                  icon={<span className="text-lg">!</span>}
+                />
+                <StatCard
+                  label="Diproses"
+                  value="42"
+                  description="masih menunggu tindak lanjut"
+                  descriptionHighlight="Aktif"
+                  icon={<span className="text-lg">~</span>}
+                />
+                <StatCard
+                  label="Selesai"
+                  value="86"
+                  description="laporan sudah ditutup"
+                  descriptionHighlight="Stabil"
+                  icon={<span className="text-lg">*</span>}
+                />
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <ReportCard
+                  appName="Pinjol Cepat Dana"
+                  description="Pengguna melaporkan kendala pada penagihan dan bunga yang tidak sesuai."
+                  status="process"
+                  date="22 Februari 2026"
+                />
+                <ReportCard
+                  appName="Pinjaman Aman"
+                  description="Laporan telah diverifikasi dan tanggapan awal sudah diberikan."
+                  status="selesai"
+                  date="20 Februari 2026"
+                />
+                <ReportCard
+                  appName="Dana Instan Plus"
+                  description="Laporan dihentikan karena data pendukung tidak mencukupi untuk dilanjutkan."
+                  status="terminate"
+                  date="18 Februari 2026"
+                />
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <ArticleCard
+                  title="Cara Mengenali Pinjol Legal dan Ilegal dengan Cepat"
+                  excerpt="Panduan singkat untuk memeriksa izin, identitas aplikasi, dan pola penagihan sebelum mengajukan pinjaman online."
+                  category="Edukasi"
+                  imageUrl={heroImage}
+                />
+                <ArticleCard
+                  title="Langkah Membuat Pengaduan yang Lengkap dan Mudah Diproses"
+                  excerpt="Susun kronologi, lampiran, dan bukti komunikasi agar laporan lebih mudah diverifikasi oleh tim penanganan."
+                  category="Panduan"
+                  imageUrl={heroImage}
+                />
+                <div className="flex min-h-48 items-center justify-center rounded-2xl border border-slate-200 bg-white p-5">
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <Spinner size="lg" />
+                    <p className="text-sm text-slate-500">Memuat data komponen...</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
