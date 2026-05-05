@@ -3,13 +3,20 @@ import {
   BackLink,
   Button,
   BuktiLampiran,
+  CalculationResultCard,
   CategoryPill,
+  CostBreakdownCard,
   DeleteConfirmModal,
   FormModal,
   Input,
+  MenuCard,
   OjkResponseHeader,
   PaginationBar,
+  PhotoUploadCard,
+  RatingSelector,
   ReportCard,
+  ReportAcceptedModal,
+  ReportRejectedModal,
   SearchBar,
   Spinner,
   StatCard,
@@ -109,6 +116,28 @@ export function UsersPage() {
           </div>
 
           <div>
+            <h2 className="text-xl font-semibold text-slate-900">Menu Card</h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <MenuCard
+                title="Dashboard"
+                icon={<span className="text-2xl font-semibold">D</span>}
+              />
+              <MenuCard
+                title="Laporan"
+                icon={<span className="text-2xl font-semibold">L</span>}
+              />
+              <MenuCard
+                title="Artikel"
+                icon={<span className="text-2xl font-semibold">A</span>}
+              />
+              <MenuCard
+                title="Profile"
+                icon={<span className="text-2xl font-semibold">P</span>}
+              />
+            </div>
+          </div>
+
+          <div>
             <h2 className="text-xl font-semibold text-slate-900">Data & Content Components</h2>
 
             <div className="mt-3 space-y-5">
@@ -182,17 +211,76 @@ export function UsersPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Rating Selector</h3>
+                  <div className="mt-3">
+                    <RatingSelector defaultValue={5} />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Photo Upload Card</h3>
+                  <div className="mt-3">
+                    <PhotoUploadCard description="Upload foto bukti atau lampiran pendukung dengan format JPG atau PNG." />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Cost Breakdown Card</h3>
+                <div className="mt-3 max-w-xl">
+                  <CostBreakdownCard
+                    principal="Rp1.000.000"
+                    interestLabel="Bunga (0.8% x 30 hari)"
+                    interestAmount="Rp240.000"
+                    adminFee="Rp25.000"
+                    total="Rp1.265.000"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Calculation Result Card</h3>
+                <div className="mt-3 max-w-xl">
+                  <CalculationResultCard
+                    monthlyInstallment="Rp 1.290.000"
+                    totalPayment="Rp 15.480.000"
+                    apr="9.6%"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <FormModal title="Create or Update User" description="Modal shell untuk form create dan update user." />
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="space-y-5">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900">Modal Components</h2>
+            <p className="mt-1 text-sm text-slate-600">Preview semua modal dijadikan satu container agar lebih rapi.</p>
+          </div>
 
-      <DeleteConfirmModal
-        title="Delete User"
-        description="Modal shell untuk konfirmasi delete data user sebelum request dijalankan."
-      />
+          <FormModal title="Create or Update User" description="Modal shell untuk form create dan update user." />
+
+          <ReportAcceptedModal
+            title="Laporan Diterima"
+            description="Laporan berhasil diterima dan akan segera diproses oleh tim terkait."
+          />
+
+          <ReportRejectedModal
+            title="Laporan Ditolak"
+            description="Laporan tidak dapat diproses karena data yang dikirim belum memenuhi kebutuhan verifikasi."
+          />
+
+          <DeleteConfirmModal
+            title="Delete User"
+            description="Modal shell untuk konfirmasi delete data user sebelum request dijalankan."
+          />
+        </div>
+      </section>
     </div>
   )
 }
