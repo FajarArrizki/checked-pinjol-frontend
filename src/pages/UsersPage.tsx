@@ -9,6 +9,7 @@ import {
   DeleteConfirmModal,
   FormModal,
   Input,
+  LoanSimulationResultCard,
   MenuCard,
   OjkResponseHeader,
   PaginationBar,
@@ -247,7 +248,25 @@ export function UsersPage() {
                   <CalculationResultCard
                     monthlyInstallment="Rp 1.290.000"
                     totalPayment="Rp 15.480.000"
+                    monthlyInterest="24.0%"
                     apr="9.6%"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Loan Simulation Result Card (Unified)</h3>
+                <div className="mt-3 max-w-xl">
+                  <LoanSimulationResultCard
+                    monthlyInstallment="Rp 1.265.000"
+                    totalPayment="Rp 1.265.000"
+                    monthlyInterest="24.0%"
+                    apr="292.0%"
+                    principal="Rp 1.000.000"
+                    interestLabel="Bunga (0.8% x 30 hari)"
+                    interestAmount="Rp 240.000"
+                    adminFee="Rp 25.000"
+                    total="Rp 1.265.000"
                   />
                 </div>
               </div>

@@ -9,6 +9,7 @@ import {
   Input,
   PageHeaderCard,
   PhotoUploadCard,
+  Modal
 } from '../components'
 import heroImage from '../assets/hero.png'
 import { tokens } from '../config/tokens'
@@ -19,7 +20,13 @@ export function ReportApplicationPage() {
   const [appLink, setAppLink] = useState('')
   const [description, setDescription] = useState('')
   const [email, setEmail] = useState('')
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const navigate = useNavigate()
+
+  const handleSubmit = () => {
+    // In a real app, this would be an API call
+    setIsSuccessModalOpen(true)
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -87,9 +94,42 @@ export function ReportApplicationPage() {
         </section>
 
         <div className="flex justify-end">
-          <Button>Kirim Laporan</Button>
+          <Button onClick={handleSubmit}>Kirim Laporan</Button>
         </div>
       </main>
+
+      <Modal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        title="Laporan Berhasil Terkirim"
+        description="Terima kasih atas laporan Anda. Kami akan segera melakukan pengecekan terhadap aplikasi tersebut."
+      >
+        <div className="flex flex-col items-center gap-6 py-4 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-500">
+            <svg className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm text-slate-600">
+              ID Laporan Anda: <span className="font-bold text-slate-900">#CP-240226001</span>
+            </p>
+            <p className="text-xs text-slate-400">
+              Simpan ID ini untuk mengecek status laporan Anda di kemudian hari.
+            </p>
+          </div>
+
+          <div className="flex w-full flex-col gap-3 pt-2">
+            <Button className="w-full" onClick={() => navigate(paths.reportStatus)}>
+              Cek Status Laporan
+            </Button>
+            <Button variant="secondary" className="w-full" onClick={() => navigate(paths.home)}>
+              Kembali ke Beranda
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

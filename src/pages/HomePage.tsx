@@ -1,13 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import { AppNavbar, ArticleCard, MenuCard } from '../components'
 import heroImage from '../assets/hero.png'
+import { tokens } from '../config/tokens'
 import { paths } from '../router/paths'
 
 const menuItems = [
   {
     title: 'Cek Legalitas Pinjol',
+    description: 'Cari tahu apakah aplikasi pinjaman tersebut memiliki izin resmi dari OJK.',
+    colorTheme: {
+      bg: 'white',
+      icon: '#3B82F6',
+      iconBg: '#EFF6FF',
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.75c.18 0 .35.04.52.11l5.75 2.56c.27.12.44.38.44.67v4.36c0 3.95-2.33 7.55-5.95 9.19a1.51 1.51 0 0 1-1.24 0c-3.62-1.64-5.95-5.24-5.95-9.19V6.09c0-.29.17-.55.44-.67l5.75-2.56c.17-.07.34-.11.52-.11Z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="m9.5 12.5 1.75 1.75 3.25-4" />
       </svg>
@@ -15,8 +22,14 @@ const menuItems = [
   },
   {
     title: 'Tulis Ulasan',
+    description: 'Bagikan pengalaman kamu agar pengguna lain lebih waspada dan terbantu.',
+    colorTheme: {
+      bg: 'white',
+      icon: '#8B5CF6',
+      iconBg: '#F5F3FF',
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.75H6.75A2.25 2.25 0 0 0 4.5 6v11.25A2.25 2.25 0 0 0 6.75 19.5H17.25A2.25 2.25 0 0 0 19.5 17.25V6.75m-9 3.75h4.5m-4.5 3h6" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 3.75 18 6" />
       </svg>
@@ -24,16 +37,28 @@ const menuItems = [
   },
   {
     title: 'Pusat Edukasi & Bantuan',
+    description: 'Panduan lengkap dan jawaban atas pertanyaan umum seputar pinjaman online.',
+    colorTheme: {
+      bg: 'white',
+      icon: tokens.colors.warning.base,
+      iconBg: tokens.colors.warning.soft,
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75v10.5m-4.5-7.5h9M5.25 19.5h13.5A1.5 1.5 0 0 0 20.25 18V6A1.5 1.5 0 0 0 18.75 4.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" />
       </svg>
     ),
   },
   {
     title: 'Simulasi Pinjaman',
+    description: 'Hitung estimasi bunga dan cicilan sebelum kamu memutuskan untuk meminjam.',
+    colorTheme: {
+      bg: 'white',
+      icon: tokens.colors.brand.primary,
+      iconBg: tokens.colors.brand.soft,
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 4.5h9A1.5 1.5 0 0 1 18 6v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 18V6a1.5 1.5 0 0 1 1.5-1.5Z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h6M9 12h6M9 15h3" />
       </svg>
@@ -41,8 +66,14 @@ const menuItems = [
   },
   {
     title: 'Status Laporan Saya',
+    description: 'Pantau perkembangan laporan yang telah kamu kirimkan secara real-time.',
+    colorTheme: {
+      bg: 'white',
+      icon: tokens.colors.slate[500],
+      iconBg: tokens.colors.slate[100],
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
@@ -50,8 +81,14 @@ const menuItems = [
   },
   {
     title: 'Laporkan Aplikasi',
+    description: 'Laporkan pinjol ilegal atau penagihan yang tidak beretika kepada kami.',
+    colorTheme: {
+      bg: 'white',
+      icon: tokens.colors.danger.base,
+      iconBg: tokens.colors.danger.soft,
+    },
     icon: (
-      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4.5m0 3h.008v.008H12v-.008ZM10.29 3.86 2.82 17.36A1.5 1.5 0 0 0 4.13 19.5h14.74a1.5 1.5 0 0 0 1.31-2.14L12.71 3.86a1.5 1.5 0 0 0-2.42 0Z" />
       </svg>
     ),
@@ -112,16 +149,14 @@ export function HomePage() {
               <MenuCard
                 key={item.title}
                 title={item.title}
+                description={item.description}
                 icon={item.icon}
-                onClick={
-                  item.title === 'Simulasi Pinjaman'
-                    ? () => navigate(paths.simulation)
-                    : item.title === 'Laporkan Aplikasi'
-                      ? () => navigate(paths.reportApplication)
-                      : item.title === 'Status Laporan Saya'
-                        ? () => navigate(paths.reportStatus)
-                      : undefined
-                }
+                colorTheme={item.colorTheme}
+                onClick={() => {
+                  if (item.title === 'Simulasi Pinjaman') navigate(paths.simulation)
+                  else if (item.title === 'Laporkan Aplikasi') navigate(paths.reportApplication)
+                  else if (item.title === 'Status Laporan Saya') navigate(paths.reportStatus)
+                }}
               />
             ))}
           </div>

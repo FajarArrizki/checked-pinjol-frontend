@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   AppNavbar,
@@ -44,10 +45,49 @@ const reportItems: ReportSummary[] = [
     link: 'https://pinjamkilatpro.example.com',
     chronology: 'Laporan dihentikan sementara karena bukti screenshot dan kronologi yang saya kirim belum cukup lengkap untuk diverifikasi lebih lanjut.',
   },
+  {
+    appName: 'Cepat Cair Plus',
+    description: 'Pengguna melaporkan adanya biaya tersembunyi yang tidak dijelaskan di awal.',
+    status: 'process' as const,
+    date: '19 Februari 2026',
+    link: 'https://cepatcairplus.example.com',
+    chronology: 'Aplikasi memotong biaya admin yang sangat besar di awal tanpa ada penjelasan di rincian biaya.',
+  },
+  {
+    appName: 'Dana Kita',
+    description: 'Laporan selesai diproses dan data aplikasi telah diperbarui.',
+    status: 'selesai' as const,
+    date: '18 Februari 2026',
+    link: 'https://danakita.example.com',
+    chronology: 'Melaporkan masalah teknis saat pengajuan. Sudah diselesaikan oleh tim dukungan.',
+  },
 ]
 
 export function ReportStatusPage() {
   const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  const filteredReports = useMemo(() => {
+    return reportItems.filter((item) => {
+      const matchesSearch = 
+        item.appName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      const matchesStatus = statusFilter === 'all' || item.status === statusFilter
+      
+      return matchesSearch && matchesStatus
+    })
+  }, [searchQuery, statusFilter])
+
+  const paginatedReports = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize
+    return filteredReports.slice(startIndex, startIndex + pageSize)
+  }, [filteredReports, currentPage, pageSize])
+
+  const totalPages = Math.ceil(filteredReports.length / pageSize)
 
   return (
     <div className="min-h-screen bg-white">
@@ -68,59 +108,93 @@ export function ReportStatusPage() {
             boxShadow: tokens.shadow.sm,
           }}
         >
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <SearchBar placeholder="Cari laporan" />
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="flex flex-1 flex-col gap-1 sm:max-w-md">
+              <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
+                Cari Laporan
+              </label>
+              <SearchBar 
+                placeholder="Masukkan nama aplikasi atau deskripsi..." 
+                className="h-[46px] max-w-full" 
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                  setCurrentPage(1)
+                }}
+              />
             </div>
 
             <div className="flex flex-1 flex-col gap-1 sm:max-w-xs">
               <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
                 Filter Status
               </label>
-              <select
-                className="w-full px-4 py-2.5 text-sm transition-all duration-200 outline-none hover:border-slate-300 focus:bg-white focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:shadow-sm"
-                style={{
-                  borderRadius: tokens.radius.md,
-                  border: `1px solid ${tokens.colors.slate[200]}`,
-                  backgroundColor: tokens.colors.slate[50],
-                  color: tokens.colors.slate[900],
-                  boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.02)',
-                }}
-                defaultValue="all"
-              >
-                <option value="all">Semua Status</option>
-                <option value="process">Diproses</option>
-                <option value="selesai">Selesai</option>
-                <option value="terminate">Ditolak</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  className="w-full appearance-none px-4 pr-10 py-3 text-sm transition-all duration-200 outline-none hover:border-slate-300 focus:bg-white focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:shadow-sm"
+                  style={{
+                    borderRadius: tokens.radius.md,
+                    border: `1px solid ${tokens.colors.slate[200]}`,
+                    backgroundColor: tokens.colors.slate[50],
+                    color: tokens.colors.slate[900],
+                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.02)',
+                  }}
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="process">Diproses</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="terminate">Ditolak</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            {reportItems.map((item) => (
-              <ReportCard
-                key={`${item.appName}-${item.status}`}
-                appName={item.appName}
-                description={item.description}
-                status={item.status}
-                date={item.date}
-                className="w-full p-6"
-                onClick={() => navigate(paths.reportDetail, { state: { report: item } })}
-              />
-            ))}
+          <div className="flex flex-col gap-4 min-h-[400px]">
+            {paginatedReports.length > 0 ? (
+              paginatedReports.map((item) => (
+                <ReportCard
+                  key={`${item.appName}-${item.status}`}
+                  appName={item.appName}
+                  description={item.description}
+                  status={item.status}
+                  date={item.date}
+                  className="w-full"
+                  onClick={() => navigate(paths.reportDetail, { state: { report: item } })}
+                />
+              ))
+            ) : (
+              <div className="flex flex-1 items-center justify-center py-12 text-center text-slate-400">
+                <p>Tidak ada laporan yang sesuai dengan pencarian kamu.</p>
+              </div>
+            )}
           </div>
 
           <PaginationBar
-            showingCount={3}
-            totalCount={12}
-            itemLabel="reports"
-            currentPage={1}
-            totalPages={4}
-            pageSize={10}
+            showingCount={paginatedReports.length}
+            totalCount={filteredReports.length}
+            itemLabel="laporan"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
             pageSizeOptions={[10, 20, 50]}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setCurrentPage(1)
+            }}
           />
         </section>
       </main>
     </div>
   )
 }
+

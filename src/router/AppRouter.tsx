@@ -4,11 +4,13 @@ import {
   HomePage,
   LoanSimulationPage,
   LoginPage,
+  ManajemenKontenPage,
   RegulatorDashboardPage,
   RegulatorIncomingReportsPage,
   RegulatorOverviewPage,
   RegulatorRegisteredLoansPage,
   RegulatorSettingsPage,
+  SuperAdminPage,
   ReportApplicationPage,
   ReportDetailPage,
   ReportStatusPage,
@@ -31,7 +33,9 @@ export function AppRouter() {
           <Route index element={<RegulatorOverviewPage />} />
           <Route path="incoming-reports" element={<RegulatorIncomingReportsPage />} />
           <Route path="registered-loans" element={<RegulatorRegisteredLoansPage />} />
+          <Route path="content" element={<ManajemenKontenPage />} />
           <Route path="settings" element={<RegulatorSettingsPage />} />
+          <Route path="super-admin" element={<SuperAdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

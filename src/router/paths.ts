@@ -8,5 +8,7 @@ export const paths = {
   regulatorOverview: '/regulator',
   regulatorIncomingReports: '/regulator/incoming-reports',
   regulatorRegisteredLoans: '/regulator/registered-loans',
+  regulatorContent: '/regulator/content',
   regulatorSettings: '/regulator/settings',
+  regulatorSuperAdmin: '/regulator/super-admin',
 } as const

@@ -3,12 +3,14 @@ import { tokens } from '../config/tokens'
 type CalculationResultCardProps = {
   monthlyInstallment: string
   totalPayment: string
+  monthlyInterest: string
   apr: string
 }
 
 export function CalculationResultCard({
   monthlyInstallment,
   totalPayment,
+  monthlyInterest,
   apr,
 }: CalculationResultCardProps) {
   return (
@@ -36,10 +38,15 @@ export function CalculationResultCard({
           <p className="mt-2 text-3xl font-bold" style={{ color: tokens.colors.slate[900] }}>{monthlyInstallment}</p>
         </div>
 
-        <div className="grid gap-4 border-t pt-4 sm:grid-cols-2" style={{ borderColor: tokens.colors.slate[200] }}>
+        <div className="grid gap-4 border-t pt-4 sm:grid-cols-3" style={{ borderColor: tokens.colors.slate[200] }}>
           <div className="flex items-start justify-between gap-4 sm:block">
             <p className="text-sm" style={{ color: tokens.colors.slate[500] }}>Total Bayar</p>
             <p className="mt-1 text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{totalPayment}</p>
+          </div>
+
+          <div className="flex items-start justify-between gap-4 sm:block">
+            <p className="text-sm" style={{ color: tokens.colors.slate[500] }}>Bunga (Bulanan)</p>
+            <p className="mt-1 text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{monthlyInterest}</p>
           </div>
 
           <div className="flex items-start justify-between gap-4 sm:block">

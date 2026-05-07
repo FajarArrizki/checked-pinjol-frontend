@@ -17,7 +17,7 @@ type SidebarProps = {
 export function Sidebar({ title = 'Menu', items, collapsed = false, onToggle }: SidebarProps) {
   return (
     <aside
-      className={`flex min-h-[calc(100vh-72px)] flex-col gap-4 border-r bg-white py-0 transition-all ${collapsed ? 'w-[72px] px-3' : 'w-full max-w-[280px] px-4'}`}
+      className={`flex h-full flex-col gap-4 border-r bg-white py-0 transition-all ${collapsed ? 'w-[72px] px-3' : 'w-full max-w-[280px] px-4'} overflow-y-auto`}
       style={{
         borderColor: tokens.colors.slate[200],
       }}

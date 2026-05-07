@@ -9,25 +9,35 @@ type TableColumn = {
 }
 
 type TableListProps = {
-  title: string
+  title?: string
   description?: string
   columns: TableColumn[]
   children?: ReactNode
+  pagination?: ReactNode
+  headerContent?: ReactNode
 }
 
-export function TableList({ title, description, columns, children }: TableListProps) {
+export function TableList({ title, description, columns, children, pagination, headerContent }: TableListProps) {
   return (
-    <section className="bg-white p-6" style={{ ...surfaceConfig.card }}>
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</h2>
-          {description ? <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[600] }}>{description}</p> : null}
+    <section className="flex flex-col h-full overflow-hidden">
+      {headerContent && (
+        <div className="mb-3 shrink-0">
+          {headerContent}
         </div>
-      </div>
+      )}
+      
+      {title ? (
+        <div className="mb-4 flex items-start justify-between gap-4 shrink-0">
+          <div>
+            <h2 className="text-xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</h2>
+            {description ? <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[600] }}>{description}</p> : null}
+          </div>
+        </div>
+      ) : null}
 
-      <div className="overflow-x-auto border" style={{ ...surfaceConfig.subtle }}>
+      <div className="flex-1 overflow-auto border rounded-lg custom-scrollbar relative" style={{ ...surfaceConfig.subtle }}>
         <table className="min-w-full border-collapse">
-          <thead style={{ backgroundColor: tokens.colors.slate[50] }}>
+          <thead className="sticky top-0 z-10 shadow-sm" style={{ backgroundColor: tokens.colors.slate[50] }}>
             <tr>
               {columns.map((column) => (
                 <th
@@ -44,6 +54,12 @@ export function TableList({ title, description, columns, children }: TableListPr
           <tbody>{children}</tbody>
         </table>
       </div>
+      
+      {pagination && (
+        <div className="mt-4 shrink-0">
+          {pagination}
+        </div>
+      )}
     </section>
   )
 }

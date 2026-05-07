@@ -18,32 +18,34 @@ export function RegulatorDashboardPage() {
       active: location.pathname === paths.regulatorRegisteredLoans,
       onClick: () => navigate(paths.regulatorRegisteredLoans),
     },
+    { label: 'Manajemen User', active: location.pathname === paths.regulatorSuperAdmin, onClick: () => navigate(paths.regulatorSuperAdmin) },
+    { label: 'Manajemen Konten', active: location.pathname === paths.regulatorContent, onClick: () => navigate(paths.regulatorContent) },
     { label: 'Pengaturan', active: location.pathname === paths.regulatorSettings, onClick: () => navigate(paths.regulatorSettings) },
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="h-screen overflow-hidden bg-white flex flex-col">
       <AppNavbar username="Regulator" onLogout={() => navigate(paths.login)} />
 
-      <main className="mx-auto flex w-full max-w-6xl gap-6 px-6 pt-px pb-8">
+      <main className="flex flex-1 overflow-hidden w-full bg-slate-50">
         <Sidebar
-          title="Dashboard"
+          title="Checked"
           items={sidebarItems}
           collapsed={collapsed}
           onToggle={() => setCollapsed((current) => !current)}
         />
 
-        <section
-          className="min-w-0 flex-1"
-        >
+        <section className="min-w-0 flex-1 p-4 sm:p-8 overflow-hidden flex flex-col">
           <div
-            className="h-full rounded-2xl bg-white p-6 shadow-sm"
+            className="flex-1 w-full rounded-2xl bg-white shadow-sm flex flex-col overflow-hidden"
             style={{
-              borderRadius: tokens.radius.lg,
+              borderRadius: tokens.radius.xl,
               boxShadow: tokens.shadow.sm,
             }}
           >
-            <Outlet />
+            <div className="flex-1 flex flex-col min-h-0">
+              <Outlet />
+            </div>
           </div>
         </section>
       </main>

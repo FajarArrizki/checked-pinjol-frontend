@@ -79,17 +79,24 @@ export function PaginationBar({
       </div>
 
       <div className="flex items-center gap-2 text-sm" style={{ color: tokens.colors.slate[500] }}>
-        <select
-          defaultValue={pageSize}
-          className="min-h-10 px-3 text-sm font-medium outline-none"
-          style={{ ...paginationConfig.select }}
-        >
-          {pageSizeOptions.map((option) => (
-            <option key={option} value={option}>
-              {option} per page
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            defaultValue={pageSize}
+            className="min-h-10 appearance-none px-3 pr-8 text-sm font-medium outline-none"
+            style={{ ...paginationConfig.select }}
+          >
+            {pageSizeOptions.map((option) => (
+              <option key={option} value={option}>
+                {option} per page
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -25,12 +25,14 @@ export function ReportCard({
     <div
       onClick={onClick}
       className={`
-        flex flex-col gap-3 cursor-pointer border
-        transition-all hover:bg-slate-50
+        flex flex-col gap-4 cursor-pointer border p-6
+        transition-all duration-200 hover:bg-slate-50 hover:shadow-md
         ${className}
       `.trim()}
       style={{
-        ...surfaceConfig.card,
+        borderRadius: tokens.radius.md,
+        borderColor: tokens.colors.slate[200],
+        backgroundColor: tokens.colors.white,
       }}
     >
       <div className="flex flex-col gap-1">

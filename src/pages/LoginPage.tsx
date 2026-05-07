@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BrandIcon } from '../components'
+import { BrandIcon, AppNavbar } from '../components'
 import { Input } from '../components'
 import { Button } from '../components'
 import { paths } from '../router/paths'
@@ -24,16 +24,13 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Header */}
-      <header className="border-b border-slate-200 px-8 py-4">
-        <BrandIcon />
-      </header>
+      <AppNavbar hideProfile />
 
       {/* Form */}
       <main className="flex flex-1 items-start justify-center pt-16 px-4">
         <div className="w-full max-w-md flex flex-col items-center gap-6">
 
-        <BrandIcon variant="logo" />
+          <BrandIcon variant="logo" />
 
           {/* Form fields */}
           <div className="w-full flex flex-col gap-4">

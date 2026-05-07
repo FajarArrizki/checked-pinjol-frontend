@@ -10,10 +10,10 @@ type SearchBarProps = InputHTMLAttributes<HTMLInputElement> & {
 export function SearchBar({ className = '', ...props }: SearchBarProps) {
   return (
     <div
-      className={`flex h-10 w-full max-w-xs items-center gap-2 px-3 transition-colors focus-within:border-transparent focus-within:ring-2 focus-within:ring-slate-900 ${className}`.trim()}
+      className={`flex w-full items-center gap-2 px-4 py-2.5 transition-all duration-200 border hover:border-slate-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1AA86E] focus-within:border-transparent focus-within:shadow-sm ${className}`.trim()}
       style={{
         ...inputConfig.fieldStyle,
-        borderRadius: tokens.radius.sm,
+        borderRadius: tokens.radius.full,
       }}
     >
       <span className="flex h-5 w-5 shrink-0 items-center justify-center" style={{ color: inputConfig.placeholderColor }}>
