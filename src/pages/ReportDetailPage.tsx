@@ -34,7 +34,7 @@ export function ReportDetailPage({ report, onBack, onLogout }: ReportDetailPageP
         <PageHeaderCard
           back={<BackLink toLabel="Status Laporan Saya" onClick={onBack} />}
           title="Detail Laporan"
-          description="Lihat rincian lengkap laporan yang telah kamu kirim, termasuk kronologi, status, dan bukti lampiran."
+          description="Tinjau detail laporan secara lengkap, termasuk status penanganan, kronologi, tautan aplikasi, dan bukti lampiran."
         />
 
         <section

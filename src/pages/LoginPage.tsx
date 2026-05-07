@@ -5,11 +5,24 @@ import { Button } from '../components'
 
 type LoginPageProps = {
   onLogin?: () => void
+  onLoginRegulator?: () => void
 }
 
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage({ onLogin, onLoginRegulator }: LoginPageProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [mode, setMode] = useState<'user' | 'regulator'>('user')
+
+  const isRegulator = mode === 'regulator'
+
+  const handleLogin = () => {
+    if (isRegulator) {
+      onLoginRegulator?.()
+      return
+    }
+
+    onLogin?.()
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -28,32 +41,36 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div className="w-full flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <Input
-                label="Email"
+                label={isRegulator ? 'Email Regulator' : 'Email'}
                 type="email"
-                placeholder="Enter your email address"
+                placeholder={isRegulator ? 'Enter regulator email address' : 'Enter your email address'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <span className="text-xs text-slate-400">We will never share your email.</span>
+              <span className="text-xs text-slate-400">
+                {isRegulator ? 'Use your registered regulator account to continue.' : 'We will never share your email.'}
+              </span>
             </div>
 
             <div className="flex flex-col gap-1">
               <Input
                 label="Password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder={isRegulator ? 'Enter regulator password' : 'Enter your password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <span className="text-xs text-slate-400">Make sure your password is secure.</span>
+              <span className="text-xs text-slate-400">
+                {isRegulator ? 'Access is limited to authorized regulator accounts.' : 'Make sure your password is secure.'}
+              </span>
             </div>
 
             <Button
               variant="secondary"
               className="w-full mt-2 rounded-xl border-slate-900 text-slate-900 font-semibold py-3"
-              onClick={onLogin}
+              onClick={handleLogin}
             >
-              Login
+              {isRegulator ? 'Login as Regulator' : 'Login'}
             </Button>
           </div>
 
@@ -69,9 +86,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div className="w-full border-t border-slate-200" />
 
           {/* Log in as Regulator */}
-          <button className="text-sm text-slate-500 hover:text-slate-700 transition-colors mb-8">
-             Log In as Regulator
-        </button>
+          <button
+            type="button"
+            onClick={() => setMode((current) => (current === 'user' ? 'regulator' : 'user'))}
+            className="text-sm text-slate-500 hover:text-slate-700 transition-colors mb-8"
+          >
+            {isRegulator ? 'Back to User Login' : 'Log In as Regulator'}
+          </button>
 
         </div>
       </main>

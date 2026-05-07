@@ -61,7 +61,7 @@ export function LoanSimulationPage({ onBack, onLogout }: LoanSimulationPageProps
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" onClick={onBack} />}
           title="Simulasi Pinjaman"
-          description="Hitung estimasi cicilan pinjaman berdasarkan jumlah pinjaman, tenor, bunga per hari, dan biaya admin."
+          description="Masukkan detail pinjaman untuk melihat estimasi cicilan, total pembayaran, dan rincian biaya secara lebih jelas."
         />
 
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">

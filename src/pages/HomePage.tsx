@@ -106,7 +106,7 @@ export function HomePage({ onLogout, onOpenSimulation, onOpenReportApplication, 
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">Layanan Utama</h2>
-              <p className="mt-1 text-sm text-slate-500">Pilih menu yang ingin kamu akses.</p>
+              <p className="mt-1 text-sm text-slate-500">Mulai dari layanan yang kamu butuhkan, mulai dari cek legalitas, simulasi pinjaman, hingga pelaporan aplikasi.</p>
             </div>
           </div>
 
@@ -134,7 +134,7 @@ export function HomePage({ onLogout, onOpenSimulation, onOpenReportApplication, 
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">Berita & Edukasi Terbaru</h2>
-              <p className="mt-1 text-sm text-slate-500">Ikuti pembaruan penting, panduan praktis, dan insight terbaru untuk menggunakan layanan pinjaman online dengan lebih aman.</p>
+              <p className="mt-1 text-sm text-slate-500">Ikuti panduan, pembaruan, dan insight terbaru agar kamu lebih aman saat menggunakan layanan pinjaman online.</p>
             </div>
           </div>
 

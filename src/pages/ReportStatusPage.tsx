@@ -57,7 +57,7 @@ export function ReportStatusPage({ onBack, onLogout, onOpenDetail }: ReportStatu
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" onClick={onBack} />}
           title="Status Laporan Saya"
-          description="Pantau perkembangan laporan yang sudah kamu kirim, mulai dari proses verifikasi sampai hasil akhir penanganan."
+          description="Pantau setiap laporan yang telah kamu kirim, mulai dari verifikasi awal hingga hasil penanganan akhir."
         />
 
         <section

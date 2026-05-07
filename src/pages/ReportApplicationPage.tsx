@@ -30,7 +30,7 @@ export function ReportApplicationPage({ onBack, onLogout }: ReportApplicationPag
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" onClick={onBack} />}
           title="Laporkan Aplikasi"
-          description="Laporkan aplikasi pinjaman yang mencurigakan atau bermasalah dengan melampirkan tautan, deskripsi singkat, dan bukti screenshot."
+          description="Laporkan aplikasi yang mencurigakan atau bermasalah dengan menyertakan tautan, kronologi singkat, dan bukti pendukung."
         />
 
         <section

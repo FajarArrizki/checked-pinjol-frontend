@@ -4,6 +4,7 @@ import {
   HomePage,
   LoanSimulationPage,
   LoginPage,
+  RegulatorDashboardPage,
   ReportApplicationPage,
   ReportDetailPage,
   ReportStatusPage,
@@ -11,8 +12,12 @@ import {
 import type { ReportDetail } from './pages'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'login' | 'home' | 'simulation' | 'report-application' | 'report-status' | 'report-detail'>('login')
+  const [currentPage, setCurrentPage] = useState<'login' | 'home' | 'simulation' | 'report-application' | 'report-status' | 'report-detail' | 'regulator'>('login')
   const [selectedReport, setSelectedReport] = useState<ReportDetail | null>(null)
+
+  if (currentPage === 'regulator') {
+    return <RegulatorDashboardPage onLogout={() => setCurrentPage('login')} />
+  }
 
   if (currentPage === 'report-detail' && selectedReport) {
     return (
@@ -56,7 +61,7 @@ function App() {
     )
   }
 
-  return <LoginPage onLogin={() => setCurrentPage('home')} />
+  return <LoginPage onLogin={() => setCurrentPage('home')} onLoginRegulator={() => setCurrentPage('regulator')} />
 }
 
 export default App
