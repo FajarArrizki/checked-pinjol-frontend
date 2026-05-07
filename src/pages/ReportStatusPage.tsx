@@ -78,12 +78,13 @@ export function ReportStatusPage() {
                 Filter Status
               </label>
               <select
-                className="w-full px-4 py-2 text-sm outline-none"
+                className="w-full px-4 py-2.5 text-sm transition-all duration-200 outline-none hover:border-slate-300 focus:bg-white focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:shadow-sm"
                 style={{
-                  borderRadius: tokens.radius.sm,
-                  border: `1px solid ${tokens.colors.slate[300]}`,
-                  backgroundColor: tokens.colors.white,
+                  borderRadius: tokens.radius.md,
+                  border: `1px solid ${tokens.colors.slate[200]}`,
+                  backgroundColor: tokens.colors.slate[50],
                   color: tokens.colors.slate[900],
+                  boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.02)',
                 }}
                 defaultValue="all"
               >

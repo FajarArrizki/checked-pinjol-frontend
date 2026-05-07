@@ -135,7 +135,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {newsItems.map((item) => (
               <ArticleCard
                 key={item.title}
@@ -143,7 +143,7 @@ export function HomePage() {
                 excerpt={item.excerpt}
                 category={item.category}
                 imageUrl={heroImage}
-                className="min-w-[320px] max-w-[360px] shrink-0"
+                className="min-w-[360px] max-w-[400px] shrink-0"
               />
             ))}
           </div>

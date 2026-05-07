@@ -21,7 +21,7 @@ export function MenuCard({ title, icon, onClick }: MenuCardProps) {
       }}
     >
       <span
-        className="flex h-14 w-14 items-center justify-center text-slate-700"
+        className="flex h-14 w-14 items-center justify-center"
         style={{
           borderRadius: tokens.radius.lg,
           backgroundColor: tokens.colors.slate[100],

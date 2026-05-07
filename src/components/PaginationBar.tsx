@@ -25,8 +25,7 @@ export function PaginationBar({
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 p-4" style={{ ...paginationConfig.container }}>
       <p className="text-sm" style={{ color: tokens.colors.slate[500] }}>
-        Showing <span className="font-semibold" style={{ color: tokens.colors.slate[900] }}>{showingCount}</span> of{' '}
-        <span className="font-semibold" style={{ color: tokens.colors.slate[900] }}>{totalCount}</span> {itemLabel}
+        Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} {itemLabel}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -79,8 +78,7 @@ export function PaginationBar({
         </button>
       </div>
 
-      <label className="flex items-center gap-2 text-sm" style={{ color: tokens.colors.slate[500] }}>
-        <span>Show</span>
+      <div className="flex items-center gap-2 text-sm" style={{ color: tokens.colors.slate[500] }}>
         <select
           defaultValue={pageSize}
           className="min-h-10 px-3 text-sm font-medium outline-none"
@@ -92,7 +90,7 @@ export function PaginationBar({
             </option>
           ))}
         </select>
-      </label>
+      </div>
     </div>
   )
 }

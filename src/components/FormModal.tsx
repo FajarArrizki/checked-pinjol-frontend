@@ -39,7 +39,7 @@ export function FormModal({ title, description, children }: FormModalProps) {
             <input
               type="text"
               className="w-full px-4 py-3 outline-none"
-              style={{ ...inputConfig.fieldStyle, borderRadius: tokens.radius.sm }}
+              style={{ ...inputConfig.fieldStyle }}
               placeholder="Input name"
             />
           </div>
@@ -49,7 +49,7 @@ export function FormModal({ title, description, children }: FormModalProps) {
             <input
               type="email"
               className="w-full px-4 py-3 outline-none"
-              style={{ ...inputConfig.fieldStyle, borderRadius: tokens.radius.sm }}
+              style={{ ...inputConfig.fieldStyle }}
               placeholder="Input email"
             />
           </div>
