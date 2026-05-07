@@ -1,12 +1,7 @@
-import { AppLayout } from './layouts/AppLayout'
-import { UsersPage } from './pages'
+import { LoginPage } from './pages'
 
 function App() {
-  return (
-    <AppLayout>
-      <UsersPage />
-    </AppLayout>
-  )
+  return <LoginPage />
 }
 
 export default App
