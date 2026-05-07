@@ -1,2 +1,7 @@
 export * from './UsersPage'
 export * from './LoginPage'
+export * from './HomePage'
+export * from './LoanSimulationPage'
+export * from './ReportApplicationPage'
+export * from './ReportStatusPage'
+export * from './ReportDetailPage'

@@ -25,7 +25,7 @@ export function ReportCard({
     <div
       onClick={onClick}
       className={`
-        flex flex-col gap-3 cursor-pointer
+        flex flex-col gap-3 cursor-pointer border
         transition-all hover:bg-slate-50
         ${className}
       `.trim()}
@@ -37,8 +37,12 @@ export function ReportCard({
         <h3 className="text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{appName}</h3>
         <p className="text-sm line-clamp-1" style={{ color: tokens.colors.slate[500] }}>{description}</p>
       </div>
-      <StatusPill status={status} />
-      <span className="text-xs" style={{ color: tokens.colors.slate[400] }}>{date}</span>
+      <div className="border-t pt-3" style={{ borderColor: tokens.colors.slate[200] }}>
+        <div className="flex flex-col gap-3">
+          <StatusPill status={status} />
+          <span className="text-xs" style={{ color: tokens.colors.slate[400] }}>{date}</span>
+        </div>
+      </div>
     </div>
   )
 }

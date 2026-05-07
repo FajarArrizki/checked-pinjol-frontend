@@ -5,12 +5,14 @@ import { tokens } from '../config/tokens'
 type MenuCardProps = {
   title: string
   icon: ReactNode
+  onClick?: () => void
 }
 
-export function MenuCard({ title, icon }: MenuCardProps) {
+export function MenuCard({ title, icon, onClick }: MenuCardProps) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="flex min-h-36 w-full flex-col items-center justify-center gap-4 border bg-white p-5 text-center transition-colors hover:bg-slate-50"
       style={{
         borderRadius: tokens.radius.lg,

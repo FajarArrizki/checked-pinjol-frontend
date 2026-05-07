@@ -3,7 +3,11 @@ import { BrandIcon } from '../components'
 import { Input } from '../components'
 import { Button } from '../components'
 
-export function LoginPage() {
+type LoginPageProps = {
+  onLogin?: () => void
+}
+
+export function LoginPage({ onLogin }: LoginPageProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -47,6 +51,7 @@ export function LoginPage() {
             <Button
               variant="secondary"
               className="w-full mt-2 rounded-xl border-slate-900 text-slate-900 font-semibold py-3"
+              onClick={onLogin}
             >
               Login
             </Button>
