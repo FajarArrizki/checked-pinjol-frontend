@@ -1,12 +1,7 @@
+import { useNavigate } from 'react-router-dom'
 import { AppNavbar, ArticleCard, MenuCard } from '../components'
 import heroImage from '../assets/hero.png'
-
-type HomePageProps = {
-  onLogout?: () => void
-  onOpenSimulation?: () => void
-  onOpenReportApplication?: () => void
-  onOpenReportStatus?: () => void
-}
+import { paths } from '../router/paths'
 
 const menuItems = [
   {
@@ -96,10 +91,12 @@ const newsItems = [
   },
 ]
 
-export function HomePage({ onLogout, onOpenSimulation, onOpenReportApplication, onOpenReportStatus }: HomePageProps) {
+export function HomePage() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={onLogout} />
+      <AppNavbar onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8">
         <section>
@@ -118,11 +115,11 @@ export function HomePage({ onLogout, onOpenSimulation, onOpenReportApplication, 
                 icon={item.icon}
                 onClick={
                   item.title === 'Simulasi Pinjaman'
-                    ? onOpenSimulation
+                    ? () => navigate(paths.simulation)
                     : item.title === 'Laporkan Aplikasi'
-                      ? onOpenReportApplication
+                      ? () => navigate(paths.reportApplication)
                       : item.title === 'Status Laporan Saya'
-                        ? onOpenReportStatus
+                        ? () => navigate(paths.reportStatus)
                       : undefined
                 }
               />

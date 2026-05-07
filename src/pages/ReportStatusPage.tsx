@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import {
   AppNavbar,
   BackLink,
@@ -7,21 +8,18 @@ import {
   SearchBar,
 } from '../components'
 import { tokens } from '../config/tokens'
+import { paths } from '../router/paths'
 
-type ReportStatusPageProps = {
-  onBack?: () => void
-  onLogout?: () => void
-  onOpenDetail?: (report: {
-    appName: string
-    description: string
-    status: 'process' | 'selesai' | 'terminate'
-    date: string
-    link: string
-    chronology: string
-  }) => void
+export type ReportSummary = {
+  appName: string
+  description: string
+  status: 'process' | 'selesai' | 'terminate'
+  date: string
+  link: string
+  chronology: string
 }
 
-const reportItems = [
+const reportItems: ReportSummary[] = [
   {
     appName: 'Pinjol Cepat Dana',
     description: 'Pengguna melaporkan bunga tidak sesuai dan penagihan yang terlalu agresif.',
@@ -48,14 +46,16 @@ const reportItems = [
   },
 ]
 
-export function ReportStatusPage({ onBack, onLogout, onOpenDetail }: ReportStatusPageProps) {
+export function ReportStatusPage() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={onLogout} />
+      <AppNavbar onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
-          back={<BackLink toLabel="Homepage" onClick={onBack} />}
+          back={<BackLink toLabel="Homepage" to={paths.home} />}
           title="Status Laporan Saya"
           description="Pantau setiap laporan yang telah kamu kirim, mulai dari verifikasi awal hingga hasil penanganan akhir."
         />
@@ -104,7 +104,7 @@ export function ReportStatusPage({ onBack, onLogout, onOpenDetail }: ReportStatu
                 status={item.status}
                 date={item.date}
                 className="w-full p-6"
-                onClick={() => onOpenDetail?.(item)}
+                onClick={() => navigate(paths.reportDetail, { state: { report: item } })}
               />
             ))}
           </div>

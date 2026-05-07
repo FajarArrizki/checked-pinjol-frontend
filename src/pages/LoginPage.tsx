@@ -1,27 +1,25 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BrandIcon } from '../components'
 import { Input } from '../components'
 import { Button } from '../components'
+import { paths } from '../router/paths'
 
-type LoginPageProps = {
-  onLogin?: () => void
-  onLoginRegulator?: () => void
-}
-
-export function LoginPage({ onLogin, onLoginRegulator }: LoginPageProps) {
+export function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState<'user' | 'regulator'>('user')
+  const navigate = useNavigate()
 
   const isRegulator = mode === 'regulator'
 
   const handleLogin = () => {
     if (isRegulator) {
-      onLoginRegulator?.()
+      navigate(paths.regulatorOverview)
       return
     }
 
-    onLogin?.()
+    navigate(paths.home)
   }
 
   return (

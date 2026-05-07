@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   AppNavbar,
@@ -10,11 +11,7 @@ import {
   PageHeaderCard,
 } from '../components'
 import { tokens } from '../config/tokens'
-
-type LoanSimulationPageProps = {
-  onBack?: () => void
-  onLogout?: () => void
-}
+import { paths } from '../router/paths'
 
 const tenorOptions = [7, 14, 21, 30, 60, 90]
 
@@ -26,11 +23,12 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
-export function LoanSimulationPage({ onBack, onLogout }: LoanSimulationPageProps) {
+export function LoanSimulationPage() {
   const [loanAmount, setLoanAmount] = useState('1000000')
   const [tenor, setTenor] = useState('30')
   const [dailyInterest, setDailyInterest] = useState('0.8')
   const [adminFee, setAdminFee] = useState('25000')
+  const navigate = useNavigate()
 
   const calculation = useMemo(() => {
     const principal = Number(loanAmount) || 0
@@ -55,11 +53,11 @@ export function LoanSimulationPage({ onBack, onLogout }: LoanSimulationPageProps
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={onLogout} />
+      <AppNavbar onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
-          back={<BackLink toLabel="Homepage" onClick={onBack} />}
+          back={<BackLink toLabel="Homepage" to={paths.home} />}
           title="Simulasi Pinjaman"
           description="Masukkan detail pinjaman untuk melihat estimasi cicilan, total pembayaran, dan rincian biaya secara lebih jelas."
         />

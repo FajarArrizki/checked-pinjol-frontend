@@ -1,10 +1,12 @@
 import type { MouseEventHandler } from 'react'
+import { Link } from 'react-router-dom'
 
 import { backLinkConfig } from './config/back-link'
 import { tokens } from '../config/tokens'
 
 type BackLinkProps = {
   toLabel: string
+  to?: string
   href?: string
   onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
 }
@@ -40,7 +42,22 @@ function BackContent({ toLabel }: Pick<BackLinkProps, 'toLabel'>) {
   )
 }
 
-export function BackLink({ toLabel, href, onClick }: BackLinkProps) {
+export function BackLink({ toLabel, to, href, onClick }: BackLinkProps) {
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className={baseClassName}
+        style={{
+          ...backLinkConfig.button,
+          borderRadius: tokens.radius.full,
+        }}
+      >
+        <BackContent toLabel={toLabel} />
+      </Link>
+    )
+  }
+
   if (href) {
     return (
       <a

@@ -1,43 +1,29 @@
 import { useState } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { AppNavbar, Sidebar } from '../components'
+import { paths } from '../router/paths'
 import { tokens } from '../config/tokens'
-import {
-  RegulatorIncomingReportsPage,
-  RegulatorOverviewPage,
-  RegulatorRegisteredLoansPage,
-  RegulatorSettingsPage,
-} from './index'
 
-type RegulatorDashboardPageProps = {
-  onLogout?: () => void
-}
-
-export function RegulatorDashboardPage({ onLogout }: RegulatorDashboardPageProps) {
+export function RegulatorDashboardPage() {
   const [collapsed, setCollapsed] = useState(false)
-  const [activeMenu, setActiveMenu] = useState<'overview' | 'incoming' | 'registered' | 'settings'>('overview')
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const sidebarItems = [
-    { label: 'Overview', active: activeMenu === 'overview', onClick: () => setActiveMenu('overview') },
-    { label: 'Laporan Masuk', active: activeMenu === 'incoming', onClick: () => setActiveMenu('incoming') },
+    { label: 'Overview', active: location.pathname === paths.regulatorOverview, onClick: () => navigate(paths.regulatorOverview) },
+    { label: 'Laporan Masuk', active: location.pathname === paths.regulatorIncomingReports, onClick: () => navigate(paths.regulatorIncomingReports) },
     {
       label: 'Pinjaman Online Terdaftar',
-      active: activeMenu === 'registered',
-      onClick: () => setActiveMenu('registered'),
+      active: location.pathname === paths.regulatorRegisteredLoans,
+      onClick: () => navigate(paths.regulatorRegisteredLoans),
     },
-    { label: 'Pengaturan', active: activeMenu === 'settings', onClick: () => setActiveMenu('settings') },
+    { label: 'Pengaturan', active: location.pathname === paths.regulatorSettings, onClick: () => navigate(paths.regulatorSettings) },
   ]
-
-  const content = {
-    overview: <RegulatorOverviewPage />,
-    incoming: <RegulatorIncomingReportsPage />,
-    registered: <RegulatorRegisteredLoansPage />,
-    settings: <RegulatorSettingsPage />,
-  }[activeMenu]
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar username="Regulator" onLogout={onLogout} />
+      <AppNavbar username="Regulator" onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl gap-6 px-6 pt-px pb-8">
         <Sidebar
@@ -57,7 +43,7 @@ export function RegulatorDashboardPage({ onLogout }: RegulatorDashboardPageProps
               boxShadow: tokens.shadow.sm,
             }}
           >
-            {content}
+            <Outlet />
           </div>
         </section>
       </main>

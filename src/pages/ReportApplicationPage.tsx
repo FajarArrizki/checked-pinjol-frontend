@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   AppNavbar,
@@ -12,23 +13,21 @@ import {
 import heroImage from '../assets/hero.png'
 import { tokens } from '../config/tokens'
 
-type ReportApplicationPageProps = {
-  onBack?: () => void
-  onLogout?: () => void
-}
+import { paths } from '../router/paths'
 
-export function ReportApplicationPage({ onBack, onLogout }: ReportApplicationPageProps) {
+export function ReportApplicationPage() {
   const [appLink, setAppLink] = useState('')
   const [description, setDescription] = useState('')
   const [email, setEmail] = useState('')
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={onLogout} />
+      <AppNavbar onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
-          back={<BackLink toLabel="Homepage" onClick={onBack} />}
+          back={<BackLink toLabel="Homepage" to={paths.home} />}
           title="Laporkan Aplikasi"
           description="Laporkan aplikasi yang mencurigakan atau bermasalah dengan menyertakan tautan, kronologi singkat, dan bukti pendukung."
         />

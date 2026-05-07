@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   AppNavbar,
   BackLink,
@@ -7,6 +8,7 @@ import {
 } from '../components'
 import heroImage from '../assets/hero.png'
 import { tokens } from '../config/tokens'
+import { paths } from '../router/paths'
 
 type ReportStatus = 'process' | 'selesai' | 'terminate'
 
@@ -19,20 +21,23 @@ export type ReportDetail = {
   chronology: string
 }
 
-type ReportDetailPageProps = {
-  report: ReportDetail
-  onBack?: () => void
-  onLogout?: () => void
-}
+export function ReportDetailPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const report = (location.state as { report?: ReportDetail } | null)?.report
 
-export function ReportDetailPage({ report, onBack, onLogout }: ReportDetailPageProps) {
+  if (!report) {
+    navigate(paths.reportStatus)
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={onLogout} />
+      <AppNavbar onLogout={() => navigate(paths.login)} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
-          back={<BackLink toLabel="Status Laporan Saya" onClick={onBack} />}
+          back={<BackLink toLabel="Status Laporan Saya" to={paths.reportStatus} />}
           title="Detail Laporan"
           description="Tinjau detail laporan secara lengkap, termasuk status penanganan, kronologi, tautan aplikasi, dan bukti lampiran."
         />
