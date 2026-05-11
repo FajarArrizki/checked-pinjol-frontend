@@ -153,7 +153,10 @@ export function HomePage() {
                 icon={item.icon}
                 colorTheme={item.colorTheme}
                 onClick={() => {
-                  if (item.title === 'Simulasi Pinjaman') navigate(paths.simulation)
+                  if (item.title === 'Cek Legalitas Pinjol') navigate(paths.legalityCheck)
+                  else if (item.title === 'Tulis Ulasan') navigate(paths.review)
+                  else if (item.title === 'Pusat Edukasi & Bantuan') navigate(paths.education)
+                  else if (item.title === 'Simulasi Pinjaman') navigate(paths.simulation)
                   else if (item.title === 'Laporkan Aplikasi') navigate(paths.reportApplication)
                   else if (item.title === 'Status Laporan Saya') navigate(paths.reportStatus)
                 }}
@@ -179,6 +182,17 @@ export function HomePage() {
                 category={item.category}
                 imageUrl={heroImage}
                 className="min-w-[360px] max-w-[400px] shrink-0"
+                onClick={() => navigate(paths.articleDetail, {
+                  state: {
+                    article: {
+                      id: item.title,
+                      title: item.title,
+                      excerpt: item.excerpt,
+                      category: item.category,
+                      imageUrl: heroImage,
+                    }
+                  }
+                })}
               />
             ))}
           </div>

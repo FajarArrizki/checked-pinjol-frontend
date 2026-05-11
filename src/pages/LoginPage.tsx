@@ -69,13 +69,18 @@ export function LoginPage() {
             </Button>
           </div>
 
-          {/* Sign Up link */}
-          <p className="text-sm text-slate-500">
-            Don't have an account?{' '}
-            <button className="text-blue-500 font-medium hover:underline">
-              Sign Up
-            </button>
-          </p>
+          {/* Sign Up link — hanya tampil untuk user */}
+          {!isRegulator && (
+            <p className="text-sm text-slate-500">
+              Don't have an account?{' '}
+              <button
+                className="text-blue-500 font-medium hover:underline"
+                onClick={() => navigate(paths.signup)}
+              >
+                Sign Up
+              </button>
+            </p>
+          )}
 
           {/* Divider */}
           <div className="w-full border-t border-slate-200" />
