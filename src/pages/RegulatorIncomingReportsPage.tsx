@@ -1,5 +1,3 @@
-// src/pages/RegulatorIncomingReportsPage.tsx
-
 import { useState, useMemo } from 'react'
 import {
   TableList,

@@ -36,7 +36,7 @@ const articleBody = {
     'Di sisi lain, warganet mulai ramai mengingatkan berbagai risiko yang mengintai, seperti bunga tinggi, denda keterlambatan, dan potensi terjebak dalam lingkaran utang',
     'Maraknya pinjol ilegal turut memperparah situasi, dengan kasus penyalahgunaan data pribadi, intimidasi penagihan, hingga ancaman terhadap pengguna',
     'Pemerintah bersama OJK diharapkan dapat memperketat pengawasan terhadap layanan pinjol serta meningkatkan literasi keuangan masyarakat',
-    'Edukasi mengenai perbedaan pinjol legal dan ilegal dinilai penting agar masyarakat dapat lebih bijak dalam mengambil keputusan finansial',
+    'Edukasi mengenai paerbedaan pinjol legal dan ilegal dinilai penting agar masyarakat dapat lebih bijak dalam mengambil keputusan finansial',
   ],
   sections: [
     {

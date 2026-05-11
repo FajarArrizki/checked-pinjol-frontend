@@ -182,6 +182,17 @@ export function HomePage() {
                 category={item.category}
                 imageUrl={heroImage}
                 className="min-w-[360px] max-w-[400px] shrink-0"
+                onClick={() => navigate(paths.articleDetail, {
+                  state: {
+                    article: {
+                      id: item.title,
+                      title: item.title,
+                      excerpt: item.excerpt,
+                      category: item.category,
+                      imageUrl: heroImage,
+                    }
+                  }
+                })}
               />
             ))}
           </div>

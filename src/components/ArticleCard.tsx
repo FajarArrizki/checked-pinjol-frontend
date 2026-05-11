@@ -21,12 +21,13 @@ export function ArticleCard({
 }: ArticleCardProps) {
   return (
     <div
-      className={`flex flex-col gap-4 p-4 bg-white border ${className}`.trim()}
+      className={`flex flex-col gap-4 p-4 bg-white border cursor-pointer hover:shadow-md transition-shadow ${className}`.trim()}
       style={{
-        borderRadius: '1.25rem', // rounded-2xl
+        borderRadius: '1.25rem',
         borderColor: tokens.colors.slate[200],
         boxShadow: tokens.shadow.sm,
       }}
+      onClick={onClick}
     >
       <img
         src={imageUrl}

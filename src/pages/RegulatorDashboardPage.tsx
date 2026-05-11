@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { AppNavbar, Sidebar } from '../components'
 import { paths } from '../router/paths'
-import { tokens } from '../Aconfig/tokens'
+import { tokens } from '../config/tokens'
 
 export function RegulatorDashboardPage() {
   const [collapsed, setCollapsed] = useState(false)
