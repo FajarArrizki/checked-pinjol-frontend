@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   AppNavbar,
@@ -9,69 +9,100 @@ import {
   SearchBar,
 } from '../components'
 import { tokens } from '../config/tokens'
+import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
+import { useLogoutRedirect } from '../auth/useLogoutRedirect'
+import { useAuth } from '../auth/AuthContext'
+import type { StatusPillValue } from '../components/config/status-pill'
 
 export type ReportSummary = {
+  id: number
   appName: string
   description: string
-  status: 'process' | 'selesai' | 'terminate'
+  status: StatusPillValue
   date: string
   link: string
   chronology: string
 }
 
-const reportItems: ReportSummary[] = [
-  {
-    appName: 'Pinjol Cepat Dana',
-    description: 'Pengguna melaporkan bunga tidak sesuai dan penagihan yang terlalu agresif.',
-    status: 'process' as const,
-    date: '20 Februari 2026',
-    link: 'https://pinjolcepatdana.example.com',
-    chronology: 'Saya menemukan aplikasi menawarkan pinjaman dengan bunga yang berubah setelah proses pengajuan dan penagihan dilakukan secara agresif melalui beberapa kontak darurat.',
-  },
-  {
-    appName: 'Dana Aman Sekali',
-    description: 'Laporan sudah diverifikasi dan tindak lanjut awal telah diberikan oleh tim terkait.',
-    status: 'selesai' as const,
-    date: '20 Februari 2026',
-    link: 'https://danaamansekali.example.com',
-    chronology: 'Saya melaporkan perbedaan informasi antara halaman promosi dan rincian biaya akhir. Tim telah memberikan tindak lanjut dan status laporan dinyatakan selesai.',
-  },
-  {
-    appName: 'Pinjam Kilat Pro',
-    description: 'Laporan dihentikan karena lampiran bukti belum cukup untuk proses verifikasi lanjutan.',
-    status: 'terminate' as const,
-    date: '20 Februari 2026',
-    link: 'https://pinjamkilatpro.example.com',
-    chronology: 'Laporan dihentikan sementara karena bukti screenshot dan kronologi yang saya kirim belum cukup lengkap untuk diverifikasi lebih lanjut.',
-  },
-  {
-    appName: 'Cepat Cair Plus',
-    description: 'Pengguna melaporkan adanya biaya tersembunyi yang tidak dijelaskan di awal.',
-    status: 'process' as const,
-    date: '19 Februari 2026',
-    link: 'https://cepatcairplus.example.com',
-    chronology: 'Aplikasi memotong biaya admin yang sangat besar di awal tanpa ada penjelasan di rincian biaya.',
-  },
-  {
-    appName: 'Dana Kita',
-    description: 'Laporan selesai diproses dan data aplikasi telah diperbarui.',
-    status: 'selesai' as const,
-    date: '18 Februari 2026',
-    link: 'https://danakita.example.com',
-    chronology: 'Melaporkan masalah teknis saat pengajuan. Sudah diselesaikan oleh tim dukungan.',
-  },
-]
-
 export function ReportStatusPage() {
   const navigate = useNavigate()
+  const handleLogout = useLogoutRedirect()
+  const { token } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [reports, setReports] = useState<ReportSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let alive = true
+
+    async function loadReports() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const response = await fetch(`${apiConfig.baseUrl}/api/laporan`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        })
+        const json = await response.json()
+
+        if (!alive || !response.ok) {
+          throw new Error(json?.message || 'Gagal memuat laporan')
+        }
+
+        const items = Array.isArray(json.data) ? json.data : []
+        setReports(items.map((item: any) => ({
+          id: Number(item.id_laporan ?? item.id ?? 0),
+          appName: item.judul_laporan ?? item.nama_pinjol ?? 'Laporan',
+          description: item.isi_laporan ?? '',
+          status: normalizeStatus(String(item.status_laporan ?? 'menunggu')),
+          date: item.tanggal_lapor ?? '',
+          link: item.tautan_aplikasi ?? '',
+          chronology: item.isi_laporan ?? '',
+        })))
+      } catch (err) {
+        if (alive) {
+          setReports([])
+          setError(err instanceof Error ? err.message : 'Gagal memuat laporan')
+        }
+      } finally {
+        if (alive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    const refreshOnFocus = () => {
+      if (token) {
+        loadReports().catch(() => setReports([]))
+      }
+    }
+
+    const refreshOnVisibility = () => {
+      if (document.visibilityState === 'visible' && token) {
+        loadReports().catch(() => setReports([]))
+      }
+    }
+
+    if (token) {
+      loadReports().catch(() => setReports([]))
+      window.addEventListener('focus', refreshOnFocus)
+      document.addEventListener('visibilitychange', refreshOnVisibility)
+    }
+
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refreshOnFocus)
+      document.removeEventListener('visibilitychange', refreshOnVisibility)
+    }
+  }, [token])
 
   const filteredReports = useMemo(() => {
-    return reportItems.filter((item) => {
+    return reports.filter((item) => {
       const matchesSearch = 
         item.appName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -80,18 +111,20 @@ export function ReportStatusPage() {
       
       return matchesSearch && matchesStatus
     })
-  }, [searchQuery, statusFilter])
+  }, [searchQuery, statusFilter, reports])
 
   const paginatedReports = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     return filteredReports.slice(startIndex, startIndex + pageSize)
   }, [filteredReports, currentPage, pageSize])
 
-  const totalPages = Math.ceil(filteredReports.length / pageSize)
+  const totalPages = Math.max(1, Math.ceil(filteredReports.length / pageSize))
+
+  const isEmpty = !loading && !error && reports.length === 0
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={() => navigate(paths.login)} />
+      <AppNavbar onLogout={handleLogout} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
@@ -159,18 +192,33 @@ export function ReportStatusPage() {
           </div>
 
           <div className="flex flex-col gap-4 min-h-[400px]">
-            {paginatedReports.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-1 items-center justify-center py-12 text-sm text-slate-400">
+                Memuat laporan...
+              </div>
+            ) : error ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            ) : paginatedReports.length > 0 ? (
               paginatedReports.map((item) => (
                 <ReportCard
-                  key={`${item.appName}-${item.status}`}
+                  key={item.id}
                   appName={item.appName}
                   description={item.description}
                   status={item.status}
                   date={item.date}
                   className="w-full"
-                  onClick={() => navigate(paths.reportDetail, { state: { report: item } })}
+                  onClick={() => navigate(paths.reportDetail.replace(':id', String(item.id)), { state: { report: item } })}
                 />
               ))
+            ) : isEmpty ? (
+              <div className="flex flex-1 items-center justify-center py-12 text-center text-slate-400">
+                <div className="max-w-sm space-y-2">
+                  <p className="text-base font-medium text-slate-700">Belum ada laporan</p>
+                  <p className="text-sm leading-6">Semua laporan yang kamu kirim akan muncul di sini setelah tersimpan di backend.</p>
+                </div>
+              </div>
             ) : (
               <div className="flex flex-1 items-center justify-center py-12 text-center text-slate-400">
                 <p>Tidak ada laporan yang sesuai dengan pencarian kamu.</p>
@@ -178,23 +226,32 @@ export function ReportStatusPage() {
             )}
           </div>
 
-          <PaginationBar
-            showingCount={paginatedReports.length}
-            totalCount={filteredReports.length}
-            itemLabel="laporan"
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            pageSizeOptions={[10, 20, 50]}
-            onPageChange={setCurrentPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size)
-              setCurrentPage(1)
-            }}
-          />
+          {!loading && !error && filteredReports.length > 0 && (
+            <PaginationBar
+              showingCount={paginatedReports.length}
+              totalCount={filteredReports.length}
+              itemLabel="laporan"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              pageSizeOptions={[10, 20, 50]}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(size: number) => {
+                setPageSize(size)
+                setCurrentPage(1)
+              }}
+            />
+          )}
         </section>
       </main>
     </div>
   )
 }
 
+function normalizeStatus(status: string): StatusPillValue {
+  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'diproses' || status === 'process') return 'diproses'
+  if (status === 'selesai') return 'selesai'
+  if (status === 'ditolak' || status === 'terminate') return 'ditolak'
+  return 'menunggu'
+}

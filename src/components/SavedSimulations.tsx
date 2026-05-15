@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { tokens } from '../config/tokens'
-import { Button } from './Button'
 
 export type SavedSimulationItem = {
   id: string
@@ -34,10 +33,10 @@ export function SavedSimulations({ simulations, onReload }: SavedSimulationsProp
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between px-5 py-3.5 text-sm transition-all duration-300 group"
         style={{
-          borderRadius: tokens.radius.xl,
+          borderRadius: tokens.radius.lg,
           border: `1px solid ${tokens.colors.slate[200]}`,
           backgroundColor: tokens.colors.slate[50],
-          color: tokens.colors.slate[800]
+          color: tokens.colors.slate[700]
         }}
       >
         <span className="font-semibold tracking-tight">Lihat {simulations.length} Riwayat Tersimpan</span>
@@ -59,13 +58,13 @@ export function SavedSimulations({ simulations, onReload }: SavedSimulationsProp
           {simulations.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between gap-4 p-4 transition-all hover:shadow-md"
-              style={{
-                borderRadius: tokens.radius.xl,
-                border: `1px solid ${tokens.colors.slate[100]}`,
-                backgroundColor: 'white',
-                boxShadow: tokens.shadow.sm
-              }}
+                className="flex items-center justify-between gap-4 p-4 transition-all hover:shadow-md"
+                style={{
+                  borderRadius: tokens.radius.lg,
+                  border: `1px solid ${tokens.colors.slate[100]}`,
+                  backgroundColor: 'white',
+                  boxShadow: tokens.shadow.sm
+                }}
             >
               <div className="flex flex-1 items-center gap-6 sm:gap-8 overflow-hidden">
                 <div className="flex flex-col gap-0.5 min-w-0">

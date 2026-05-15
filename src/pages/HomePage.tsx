@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppNavbar, ArticleCard, MenuCard } from '../components'
-import heroImage from '../assets/hero.png'
 import { tokens } from '../config/tokens'
 import { paths } from '../router/paths'
+import { useLogoutRedirect } from '../auth/useLogoutRedirect'
+import { apiConfig } from '../config/api'
+import { buildArticleImageUrl } from '../utils/article-image'
 
 const menuItems = [
   {
@@ -95,45 +98,64 @@ const menuItems = [
   },
 ]
 
-const newsItems = [
-  {
-    title: 'Cara Memastikan Aplikasi Pinjaman Terdaftar Resmi di OJK',
-    excerpt:
-      'Kenali indikator legalitas aplikasi pinjaman online sebelum mengajukan, mulai dari izin sampai transparansi biaya.',
-    category: 'Edukasi',
-  },
-  {
-    title: 'Langkah Aman Membuat Laporan Pinjol Bermasalah',
-    excerpt:
-      'Susun bukti, kronologi, dan lampiran pendukung agar laporan lebih mudah diverifikasi dan ditindaklanjuti.',
-    category: 'Panduan',
-  },
-  {
-    title: 'Tips Menghitung Total Biaya Pinjaman Sebelum Setuju',
-    excerpt:
-      'Pelajari cara membaca bunga, biaya admin, dan APR supaya tidak salah mengambil keputusan finansial.',
-    category: 'Keuangan',
-  },
-  {
-    title: 'Waspadai Ciri-Ciri Penagihan yang Tidak Sesuai Aturan',
-    excerpt:
-      'Pahami tanda-tanda penagihan yang melanggar etika dan langkah aman yang bisa dilakukan saat menghadapinya.',
-    category: 'Keamanan',
-  },
-  {
-    title: 'Cara Menyusun Bukti Screenshot yang Kuat untuk Laporan',
-    excerpt:
-      'Susun tangkapan layar, percakapan, dan kronologi secara rapi agar laporan lebih mudah diverifikasi oleh tim penanganan.',
-    category: 'Bantuan',
-  },
-]
+type ArticleItem = {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  imageUrl?: string
+  author?: string
+  publishedAt?: string | null
+  slug?: string
+}
+
+type ApiArticle = {
+  id_artikel: number
+  judul: string
+  slug?: string
+  kategori: string
+  author?: string
+  summary?: string
+  gambar?: string | null
+  published_at?: string | null
+  created_at?: string | null
+}
+
+function toArticle(item: ApiArticle): ArticleItem {
+  return {
+    id: String(item.id_artikel),
+    title: item.judul,
+    excerpt: item.summary ?? '',
+    category: item.kategori || 'Edukasi',
+    imageUrl: buildArticleImageUrl(item.gambar),
+    author: item.author,
+    publishedAt: item.published_at ?? item.created_at ?? null,
+    slug: item.slug,
+  }
+}
 
 export function HomePage() {
   const navigate = useNavigate()
+  const handleLogout = useLogoutRedirect()
+  const [newsItems, setNewsItems] = useState<ArticleItem[]>([])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch(`${apiConfig.baseUrl}/api/artikel?per_page=5`, { signal: controller.signal })
+      .then((res) => res.json())
+      .then((json) => {
+        const items = Array.isArray(json.data) ? json.data : []
+        setNewsItems(items.map((item: ApiArticle) => toArticle(item)))
+      })
+      .catch(() => setNewsItems([]))
+
+    return () => controller.abort()
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={() => navigate(paths.login)} />
+      <AppNavbar onLogout={handleLogout} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8">
         <section>
@@ -180,19 +202,11 @@ export function HomePage() {
                 title={item.title}
                 excerpt={item.excerpt}
                 category={item.category}
-                imageUrl={heroImage}
+                imageUrl={item.imageUrl}
+                author={item.author}
+                publishedAt={item.publishedAt ?? undefined}
                 className="min-w-[360px] max-w-[400px] shrink-0"
-                onClick={() => navigate(paths.articleDetail, {
-                  state: {
-                    article: {
-                      id: item.title,
-                      title: item.title,
-                      excerpt: item.excerpt,
-                      category: item.category,
-                      imageUrl: heroImage,
-                    }
-                  }
-                })}
+                onClick={() => navigate(`/education/article/${encodeURIComponent(item.slug ?? item.id)}`)}
               />
             ))}
           </div>

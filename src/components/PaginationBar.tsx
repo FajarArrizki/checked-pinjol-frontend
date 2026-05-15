@@ -9,6 +9,8 @@ type PaginationBarProps = {
   totalPages: number
   pageSize: number
   pageSizeOptions: number[]
+  onPageChange?: (page: number) => void
+  onPageSizeChange?: (size: number) => void
 }
 
 export function PaginationBar({
@@ -19,13 +21,18 @@ export function PaginationBar({
   totalPages,
   pageSize,
   pageSizeOptions,
+  onPageChange,
+  onPageSizeChange,
 }: PaginationBarProps) {
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
+  const startItem = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1
+  const endItem = Math.min(currentPage * pageSize, totalCount)
+  void showingCount
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 p-4" style={{ ...paginationConfig.container }}>
       <p className="text-sm" style={{ color: tokens.colors.slate[500] }}>
-        Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} {itemLabel}
+        Showing {startItem} to {endItem} of {totalCount} {itemLabel}
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -34,6 +41,8 @@ export function PaginationBar({
           className="inline-flex h-10 w-10 items-center justify-center transition-colors hover:bg-slate-50"
           style={{ ...paginationConfig.control }}
           aria-label="Previous page"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
         >
           <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
             <path
@@ -56,6 +65,7 @@ export function PaginationBar({
               ].join(' ')}
               style={isActive ? paginationConfig.activePage : paginationConfig.inactivePage}
               aria-current={isActive ? 'page' : undefined}
+              onClick={() => onPageChange?.(page)}
             >
               {page}
             </button>
@@ -67,6 +77,8 @@ export function PaginationBar({
           className="inline-flex h-10 w-10 items-center justify-center transition-colors hover:bg-slate-50"
           style={{ ...paginationConfig.control }}
           aria-label="Next page"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange?.(Math.min(totalPages, currentPage + 1))}
         >
           <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
             <path
@@ -82,6 +94,7 @@ export function PaginationBar({
         <div className="relative">
           <select
             defaultValue={pageSize}
+            onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
             className="min-h-10 appearance-none px-3 pr-8 text-sm font-medium outline-none"
             style={{ ...paginationConfig.select }}
           >

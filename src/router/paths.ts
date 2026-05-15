@@ -1,11 +1,12 @@
 export const paths = {
   login: '/login',
+  adminLogin: '/admin/login',
   signup: '/signup',
   home: '/home',
   simulation: '/simulation',
   reportApplication: '/report-application',
   reportStatus: '/report-status',
-  reportDetail: '/report-status/detail',
+  reportDetail: '/report-status/detail/:id',
   legalityCheck: '/legality-check',
   review: '/review',
   regulatorOverview: '/regulator',
@@ -15,5 +16,5 @@ export const paths = {
   regulatorSettings: '/regulator/settings',
   regulatorSuperAdmin: '/regulator/super-admin',
   education: '/education',
-  articleDetail: '/education/article',
+  articleDetail: '/education/article/:slugOrId',
 } as const

@@ -1,15 +1,15 @@
 import { tokens } from '../config/tokens'
 
 type LoanSimulationResultCardProps = {
-  monthlyInstallment: string
-  totalPayment: string
-  monthlyInterest: string
-  apr: string
-  principal: string
-  interestLabel: string
-  interestAmount: string
-  adminFee: string
-  total: string
+  monthlyInstallment?: string
+  totalPayment?: string
+  monthlyInterest?: string
+  apr?: string
+  principal?: string
+  interestLabel?: string
+  interestAmount?: string
+  adminFee?: string
+  total?: string
 }
 
 export function LoanSimulationResultCard({
@@ -49,7 +49,7 @@ export function LoanSimulationResultCard({
             Cicilan per Bulan
           </p>
           <p className="mt-1 text-4xl font-bold" style={{ color: tokens.colors.slate[900] }}>
-            {monthlyInstallment}
+            {monthlyInstallment ?? '-'}
           </p>
 
           <div className="mt-8 grid grid-cols-3 gap-4 border-t pt-6" style={{ borderColor: tokens.colors.slate[100] }}>
@@ -58,7 +58,7 @@ export function LoanSimulationResultCard({
                 Total Bayar
               </p>
               <p className="mt-1 text-sm font-bold" style={{ color: tokens.colors.slate[900] }}>
-                {totalPayment}
+                {totalPayment ?? '-'}
               </p>
             </div>
             <div>
@@ -66,7 +66,7 @@ export function LoanSimulationResultCard({
                 Bunga (Bulanan)
               </p>
               <p className="mt-1 text-sm font-bold" style={{ color: tokens.colors.slate[900] }}>
-                {monthlyInterest}
+                {monthlyInterest ?? '-'}
               </p>
             </div>
             <div>
@@ -74,7 +74,7 @@ export function LoanSimulationResultCard({
                 APR (Tahunan)
               </p>
               <p className="mt-1 text-sm font-bold" style={{ color: tokens.colors.slate[900] }}>
-                {apr}
+                {apr ?? '-'}
               </p>
             </div>
           </div>
@@ -89,20 +89,20 @@ export function LoanSimulationResultCard({
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
               <span style={{ color: tokens.colors.slate[500] }}>Pinjaman Pokok</span>
-              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{principal}</span>
+              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{principal ?? '-'}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span style={{ color: tokens.colors.slate[500] }}>{interestLabel}</span>
-              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{interestAmount}</span>
+              <span style={{ color: tokens.colors.slate[500] }}>{interestLabel ?? '-'}</span>
+              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{interestAmount ?? '-'}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span style={{ color: tokens.colors.slate[500] }}>Biaya Admin</span>
-              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{adminFee}</span>
+              <span className="font-medium" style={{ color: tokens.colors.slate[900] }}>{adminFee ?? '-'}</span>
             </div>
             
             <div className="mt-4 flex justify-between border-t pt-4 text-base font-bold" style={{ borderColor: tokens.colors.slate[200] }}>
               <span style={{ color: tokens.colors.slate[900] }}>Total Rincian Biaya</span>
-              <span style={{ color: tokens.colors.brand.primary }}>{total}</span>
+              <span style={{ color: tokens.colors.brand.primary }}>{total ?? '-'}</span>
             </div>
           </div>
         </div>

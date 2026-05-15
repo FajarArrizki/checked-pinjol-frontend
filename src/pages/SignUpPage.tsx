@@ -2,17 +2,44 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandIcon, AppNavbar, Input, Button } from '../components'
 import { paths } from '../router/paths'
+import { useAuth } from '../auth/AuthContext'
+import { isApiError } from '../auth/authApi'
 
 export function SignUpPage() {
+  const { register } = useAuth()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [noHp, setNoHp] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleSignUp = () => {
-    // nanti disambungkan ke API
-    navigate(paths.home)
+  const handleSignUp = async () => {
+    setError('')
+
+    if (password !== confirmPassword) {
+      setError('Password tidak cocok.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      await register({
+        name,
+        email,
+        noHp,
+        password,
+      })
+
+      navigate(paths.login, { state: { email } })
+    } catch (err) {
+      setError(isApiError(err) ? err.message : 'Pendaftaran gagal')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,6 +74,16 @@ export function SignUpPage() {
               <span className="text-xs text-slate-400">
                 We will never share your email.
               </span>
+              </div>
+
+            <div className="flex flex-col gap-1">
+              <Input
+                label="No. HP"
+                type="tel"
+                placeholder="08xxxxxxxxxx"
+                value={noHp}
+                onChange={(e) => setNoHp(e.target.value)}
+              />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -77,12 +114,19 @@ export function SignUpPage() {
               )}
             </div>
 
+            {error && (
+              <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </p>
+            )}
+
             <Button
               variant="secondary"
               className="w-full mt-2 rounded-xl border-slate-900 text-slate-900 font-semibold py-3"
               onClick={handleSignUp}
+              disabled={loading}
             >
-              Sign Up
+              {loading ? 'Memproses...' : 'Daftar'}
             </Button>
           </div>
 

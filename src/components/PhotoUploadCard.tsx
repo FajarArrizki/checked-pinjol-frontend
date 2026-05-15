@@ -2,19 +2,28 @@ import { tokens } from '../config/tokens'
 
 type PhotoUploadCardProps = {
   description: string
+  multiple?: boolean
+  onFileChange?: (files: File[]) => void
 }
 
-export function PhotoUploadCard({ description }: PhotoUploadCardProps) {
+export function PhotoUploadCard({ description, multiple = true, onFileChange }: PhotoUploadCardProps) {
   return (
-    <button
-      type="button"
-      className="flex min-h-48 w-full flex-col items-center justify-center gap-4 border border-dashed bg-white p-6 text-center transition-colors hover:bg-slate-50"
+    <label
+      className="flex min-h-48 w-full cursor-pointer flex-col items-center justify-center gap-4 border border-dashed bg-white p-6 text-center transition-colors hover:bg-slate-50"
       style={{
         borderRadius: tokens.radius.lg,
         borderColor: tokens.colors.slate[300],
         boxShadow: tokens.shadow.sm,
       }}
     >
+      <input
+        type="file"
+        accept="image/*"
+        multiple={multiple}
+        className="sr-only"
+        onChange={(event) => onFileChange?.(Array.from(event.target.files ?? []))}
+      />
+
       <span
         className="flex h-16 w-16 items-center justify-center"
         style={{
@@ -39,7 +48,12 @@ export function PhotoUploadCard({ description }: PhotoUploadCardProps) {
         </svg>
       </span>
 
-      <p className="max-w-xs text-sm leading-6" style={{ color: tokens.colors.slate[500] }}>{description}</p>
-    </button>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-sm font-medium" style={{ color: tokens.colors.slate[900] }}>
+          Klik untuk unggah screenshot
+        </p>
+        <p className="max-w-xs text-sm leading-6" style={{ color: tokens.colors.slate[500] }}>{description}</p>
+      </div>
+    </label>
   )
 }

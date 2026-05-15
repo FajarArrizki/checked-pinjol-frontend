@@ -1,5 +1,4 @@
 import { type ReactNode, useEffect } from 'react'
-import { surfaceConfig } from './config/surface'
 import { tokens } from '../config/tokens'
 
 type ModalProps = {
@@ -35,13 +34,10 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
       
       {/* Modal Content */}
       <div 
-        className="relative w-full max-w-md bg-white p-6 shadow-xl"
-        style={{ 
-          ...surfaceConfig.card,
-          animation: 'modalSlideUp 0.3s ease-out forwards'
-        }}
+        className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-3xl bg-white p-6 shadow-xl"
+        style={{ animation: 'modalSlideUp 0.3s ease-out forwards' }}
       >
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-6 flex shrink-0 items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</h2>
             {description ? <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[600] }}>{description}</p> : null}
@@ -50,16 +46,16 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
             aria-label="Close modal"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div>
+        <div className="overflow-y-auto pr-1 custom-scrollbar">
           {children}
         </div>
       </div>

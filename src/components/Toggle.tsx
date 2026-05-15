@@ -1,5 +1,3 @@
-import { tokens } from '../config/tokens'
-
 type ToggleProps = {
   checked: boolean
   onChange: (checked: boolean) => void

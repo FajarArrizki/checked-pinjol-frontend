@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AppNavbar, BackLink, ArticleCard, PageHeaderCard, PaginationBar } from '../components'
+import { AppNavbar, BackLink, ArticleCard, PageHeaderCard, PaginationBar, Spinner } from '../components'
 import { tokens } from '../config/tokens'
+import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
+import { useLogoutRedirect } from '../auth/useLogoutRedirect'
 import heroImage from '../assets/hero.png'
-
-type ArticleCategory = 'Semua' | 'Tips' | 'Hukum' | 'Cara Lapor'
+import { buildArticleImageUrl } from '../utils/article-image'
 
 export type Article = {
   id: string
@@ -13,43 +14,90 @@ export type Article = {
   excerpt: string
   category: string
   imageUrl: string
+  author?: string
+  publishedAt?: string | null
+  slug?: string
 }
 
-const articles: Article[] = [
-  { id: '1', title: '5 Cara Agar Tidak Terjerat Pinjol (Pinjaman Online)', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Tips', imageUrl: heroImage },
-  { id: '2', title: 'Tren Pinjol Meningkat, Warganet Ingatkan Bahaya', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Edukasi', imageUrl: heroImage },
-  { id: '3', title: 'Ada Peningkatan, Utang Pinjol di Indonesia Capai Rp 80 Triliun', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Hukum', imageUrl: heroImage },
-  { id: '4', title: 'Tren Pinjol Meningkat, Warganet Ingatkan Bahaya', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Cara Lapor', imageUrl: heroImage },
-  { id: '5', title: 'Ada Peningkatan, Utang Pinjol di Indonesia Capai Rp 80 Triliun', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Edukasi', imageUrl: heroImage },
-  { id: '6', title: '5 Cara Agar Tidak Terjerat Pinjol (Pinjaman Online)', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Tips', imageUrl: heroImage },
-  { id: '7', title: 'Ada Peningkatan, Utang Pinjol di Indonesia Capai Rp 80 Triliun', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Hukum', imageUrl: heroImage },
-  { id: '8', title: '5 Cara Agar Tidak Terjerat Pinjol (Pinjaman Online)', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Tips', imageUrl: heroImage },
-  { id: '9', title: 'Tren Pinjol Meningkat, Warganet Ingatkan Bahaya', excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.', category: 'Cara Lapor', imageUrl: heroImage },
-]
+type ApiArticle = {
+  id_artikel: number
+  judul: string
+  slug?: string
+  kategori: string
+  author?: string
+  summary?: string
+  gambar?: string | null
+  status?: string
+  published_at?: string | null
+  created_at?: string | null
+}
 
-const filterTabs: ArticleCategory[] = ['Semua', 'Tips', 'Hukum', 'Cara Lapor']
+const filterTabs = ['Semua', 'Tips & Panduan', 'Edukasi'] as const
+
+function toArticle(item: ApiArticle): Article {
+  return {
+    id: String(item.id_artikel),
+    title: item.judul,
+    excerpt: item.summary ?? '',
+    category: item.kategori || 'Edukasi',
+    imageUrl: buildArticleImageUrl(item.gambar) ?? heroImage,
+    author: item.author,
+    publishedAt: item.published_at ?? item.created_at ?? null,
+    slug: item.slug,
+  }
+}
 
 export function EducationPage() {
   const navigate = useNavigate()
-  const [activeFilter, setActiveFilter] = useState<ArticleCategory>('Semua')
+  const handleLogout = useLogoutRedirect()
+  const [activeFilter, setActiveFilter] = useState<(typeof filterTabs)[number]>('Semua')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(9)
+  const [articles, setArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadArticles() {
+      try {
+        setLoading(true)
+        setError('')
+        const res = await fetch(`${apiConfig.baseUrl}/api/artikel?per_page=50`, { signal: controller.signal })
+        const json = await res.json()
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || 'Gagal memuat artikel')
+        }
+        setArticles((json.data ?? []).map(toArticle))
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          setError((err as Error).message || 'Gagal memuat artikel')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadArticles()
+    return () => controller.abort()
+  }, [])
 
   const filteredArticles = useMemo(() => {
     if (activeFilter === 'Semua') return articles
     return articles.filter((a) => a.category === activeFilter)
-  }, [activeFilter])
+  }, [activeFilter, articles])
 
   const paginatedArticles = useMemo(() => {
     const start = (currentPage - 1) * pageSize
     return filteredArticles.slice(start, start + pageSize)
   }, [filteredArticles, currentPage, pageSize])
 
-  const totalPages = Math.ceil(filteredArticles.length / pageSize)
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / pageSize))
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={() => navigate(paths.login)} />
+      <AppNavbar onLogout={handleLogout} />
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" to={paths.home} />}
@@ -65,12 +113,14 @@ export function EducationPage() {
             boxShadow: tokens.shadow.sm,
           }}
         >
-          {/* Filter Tabs */}
           <div className="flex flex-wrap gap-2">
             {filterTabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => { setActiveFilter(tab); setCurrentPage(1) }}
+                onClick={() => {
+                  setActiveFilter(tab)
+                  setCurrentPage(1)
+                }}
                 className="px-4 py-2 text-sm font-medium transition-colors"
                 style={{
                   borderRadius: tokens.radius.full,
@@ -84,32 +134,48 @@ export function EducationPage() {
             ))}
           </div>
 
-          {/* Article Grid */}
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {paginatedArticles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                title={article.title}
-                excerpt={article.excerpt}
-                category={article.category}
-                imageUrl={article.imageUrl}
-                onClick={() => navigate(paths.articleDetail, { state: { article } })}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex min-h-[240px] items-center justify-center">
+              <Spinner />
+            </div>
+          ) : error ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {paginatedArticles.map((article) => (
+                  <ArticleCard
+                    key={article.id}
+                    id={article.id}
+                    title={article.title}
+                    excerpt={article.excerpt}
+                    category={article.category}
+                    imageUrl={article.imageUrl}
+                    author={article.author}
+                    publishedAt={article.publishedAt ?? undefined}
+                    onClick={() => navigate(`/education/article/${encodeURIComponent(article.slug ?? article.id)}`)}
+                  />
+                ))}
+              </div>
 
-          {/* Pagination */}
-          <PaginationBar
-            showingCount={paginatedArticles.length}
-            totalCount={filteredArticles.length}
-            itemLabel="articles"
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            pageSizeOptions={[9, 18, 27]}
-            onPageChange={setCurrentPage}
-            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1) }}
-          />
+              <PaginationBar
+                showingCount={paginatedArticles.length}
+                totalCount={filteredArticles.length}
+                itemLabel="articles"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                pageSizeOptions={[9, 18, 27]}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size: number) => {
+                  setPageSize(size)
+                  setCurrentPage(1)
+                }}
+              />
+            </>
+          )}
         </section>
       </main>
     </div>

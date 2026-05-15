@@ -5,9 +5,10 @@ type BuktiLampiranProps = {
   title: string
   size: string
   imageUrl?: string
+  onRemove?: () => void
 }
 
-export function BuktiLampiran({ title, size, imageUrl }: BuktiLampiranProps) {
+export function BuktiLampiran({ title, size, imageUrl, onRemove }: BuktiLampiranProps) {
   return (
     <div
       className="flex items-center gap-4 p-4"
@@ -49,6 +50,20 @@ export function BuktiLampiran({ title, size, imageUrl }: BuktiLampiranProps) {
         <p className="truncate text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>{title}</p>
         <p className="mt-1 text-sm" style={{ color: tokens.colors.slate[500] }}>{size}</p>
       </div>
+
+      {onRemove && (
+        <button
+          type="button"
+          aria-label={`Hapus ${title}`}
+          onClick={onRemove}
+          className="ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-slate-100"
+          style={{ color: tokens.colors.slate[500] }}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+      )}
     </div>
   )
 }

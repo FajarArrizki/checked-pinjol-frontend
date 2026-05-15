@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import {
   AppNavbar,
@@ -13,7 +12,10 @@ import {
   type SavedSimulationItem,
 } from '../components'
 import { tokens } from '../config/tokens'
+import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
+import { useLogoutRedirect } from '../auth/useLogoutRedirect'
+import { useAuth } from '../auth/AuthContext'
 
 const tenorOptions = [7, 14, 21, 30, 60, 90]
 
@@ -32,7 +34,20 @@ export function LoanSimulationPage() {
   const [adminFee, setAdminFee] = useState('25000')
   const [isAgreed, setIsAgreed] = useState(false)
   const [savedSimulations, setSavedSimulations] = useState<SavedSimulationItem[]>([])
-  const navigate = useNavigate()
+  const [result, setResult] = useState<null | {
+    monthlyInstallment: string
+    totalPayment: string
+    monthlyInterest: string
+    apr: string
+    principal: string
+    interestLabel: string
+    interestAmount: string
+    adminFee: string
+    total: string
+  }>(null)
+  const [loading, setLoading] = useState(false)
+  const handleLogout = useLogoutRedirect()
+  const { token } = useAuth()
 
   const calculation = useMemo(() => {
     const principal = Number(loanAmount) || 0
@@ -73,6 +88,63 @@ export function LoanSimulationPage() {
     alert('Simulasi berhasil disimpan!')
   }
 
+  const handleSaveToBackend = async () => {
+    await fetch(`${apiConfig.baseUrl}/api/simulasi`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        jumlah_pinjaman: Number(loanAmount),
+        tenor_hari: Number(tenor),
+        bunga_per_hari: Number(dailyInterest),
+        biaya_admin: Number(adminFee),
+      }),
+    })
+  }
+
+  const handleSimulate = async () => {
+    setLoading(true)
+
+    try {
+      const response = await fetch(`${apiConfig.baseUrl}/api/simulasi`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          jumlah_pinjaman: Number(loanAmount),
+          tenor_hari: Number(tenor),
+          bunga_per_hari: Number(dailyInterest),
+          biaya_admin: Number(adminFee),
+        }),
+      })
+
+      const json = await response.json()
+
+      if (!response.ok) {
+        throw new Error(json?.message ?? 'Gagal menghitung simulasi')
+      }
+
+      const data = json.data
+      setResult({
+        monthlyInstallment: formatCurrency(Number(data.cicilan_per_bulan)),
+        totalPayment: formatCurrency(Number(data.total_bayar)),
+        monthlyInterest: `${(Number(dailyInterest) * 30).toFixed(1)}%`,
+        apr: `${Number(data.apr_tahunan).toFixed(1)}%`,
+        principal: formatCurrency(Number(data.jumlah_pinjaman)),
+        interestLabel: `Bunga (${dailyInterest}% x ${tenor} hari)`,
+        interestAmount: formatCurrency(Number(data.total_bunga)),
+        adminFee: formatCurrency(Number(data.biaya_admin)),
+        total: formatCurrency(Number(data.total_bayar)),
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleReloadSimulation = (item: SavedSimulationItem) => {
     setLoanAmount(item.loanAmount)
     setTenor(item.tenor)
@@ -84,7 +156,7 @@ export function LoanSimulationPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={() => navigate(paths.login)} />
+      <AppNavbar onLogout={handleLogout} />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
@@ -172,8 +244,8 @@ export function LoanSimulationPage() {
                 </span>
               </label>
 
-              <Button className="w-full py-3 font-semibold" disabled={!isAgreed}>
-                Simulasikan Sekarang
+              <Button className="w-full py-3 font-semibold" disabled={!isAgreed || loading} onClick={async () => { await handleSimulate(); await handleSaveToBackend() }}>
+                {loading ? 'Menghitung...' : 'Simulasikan Sekarang'}
               </Button>
             </div>
 
@@ -195,17 +267,7 @@ export function LoanSimulationPage() {
           </div>
 
           <div className="h-full">
-            <LoanSimulationResultCard
-              monthlyInstallment={formatCurrency(calculation.monthlyInstallment)}
-              totalPayment={formatCurrency(calculation.totalPayment)}
-              monthlyInterest={`${calculation.monthlyInterestRate.toFixed(1)}%`}
-              apr={`${calculation.apr.toFixed(1)}%`}
-              principal={formatCurrency(calculation.principal)}
-              interestLabel={`Bunga (${dailyInterest}% x ${tenor} hari)`}
-              interestAmount={formatCurrency(calculation.interestAmount)}
-              adminFee={formatCurrency(calculation.admin)}
-              total={formatCurrency(calculation.totalPayment)}
-            />
+            <LoanSimulationResultCard {...result ?? {}} />
           </div>
         </section>
 

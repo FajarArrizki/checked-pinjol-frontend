@@ -21,14 +21,16 @@ import {
   ArticleDetailPage,
 } from '../pages'
 import { paths } from './paths'
+import { ProtectedRoute, PublicRoute } from '../auth/ProtectedRoute'
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to={paths.login} replace />} />
-        <Route path={paths.login} element={<LoginPage />} />
-        <Route path={paths.signup} element={<SignUpPage />} />
+        <Route path={paths.login} element={<PublicRoute><LoginPage /></PublicRoute>} />
+        <Route path={paths.adminLogin} element={<PublicRoute><LoginPage /></PublicRoute>} />
+        <Route path={paths.signup} element={<PublicRoute><SignUpPage /></PublicRoute>} />
         <Route path={paths.home} element={<HomePage />} />
         <Route path={paths.simulation} element={<LoanSimulationPage />} />
         <Route path={paths.reportApplication} element={<ReportApplicationPage />} />
@@ -40,13 +42,13 @@ export function AppRouter() {
         <Route path={paths.articleDetail} element={<ArticleDetailPage />} />
 
 
-        <Route path={paths.regulatorOverview} element={<RegulatorDashboardPage />}>
+        <Route path={paths.regulatorOverview} element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><RegulatorDashboardPage /></ProtectedRoute>}>
           <Route index element={<RegulatorOverviewPage />} />
           <Route path="incoming-reports" element={<RegulatorIncomingReportsPage />} />
           <Route path="registered-loans" element={<RegulatorRegisteredLoansPage />} />
           <Route path="content" element={<ManajemenKontenPage />} />
           <Route path="settings" element={<RegulatorSettingsPage />} />
-          <Route path="super-admin" element={<SuperAdminPage />} />
+          <Route path="super-admin" element={<ProtectedRoute allowedRoles={['superadmin']}><SuperAdminPage /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>
