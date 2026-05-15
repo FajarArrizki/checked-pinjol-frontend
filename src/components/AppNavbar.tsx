@@ -1,3 +1,4 @@
+import { useAuth } from '../auth/AuthContext'
 import { BrandIcon } from './BrandIcon'
 import { ProfileTrigger } from './ProfileTrigger'
 
@@ -7,7 +8,11 @@ type AppNavbarProps = {
   hideProfile?: boolean
 }
 
-export function AppNavbar({ username = 'Fajar Arrizki', onLogout, hideProfile }: AppNavbarProps) {
+export function AppNavbar({ username, onLogout, hideProfile }: AppNavbarProps) {
+  const { user } = useAuth()
+  const displayName = username ?? user?.username ?? user?.name ?? 'Pengguna'
+  const email = user?.email ?? ''
+
   return (
     <header className="border-b border-slate-200 bg-white px-6 py-4 shadow-sm">
       <div className="flex w-full items-center justify-between gap-4">
@@ -15,7 +20,7 @@ export function AppNavbar({ username = 'Fajar Arrizki', onLogout, hideProfile }:
 
         {!hideProfile && (
           <div className="flex items-center gap-3">
-            <ProfileTrigger username={username} onLogout={onLogout} />
+            <ProfileTrigger username={displayName} email={email} onLogout={onLogout} />
           </div>
         )}
       </div>

@@ -1,13 +1,11 @@
 import { StatusPill } from './StatusPill'
-import { surfaceConfig } from './config/surface'
+import type { StatusPillValue } from './config/status-pill'
 import { tokens } from '../config/tokens'
-
-type ReportStatus = 'process' | 'selesai' | 'terminate'  // ← sesuaikan ini
 
 type ReportCardProps = {
   appName: string
   description: string
-  status: ReportStatus
+  status: StatusPillValue
   date: string
   onClick?: () => void
   className?: string

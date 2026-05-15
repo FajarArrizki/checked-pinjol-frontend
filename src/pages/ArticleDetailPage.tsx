@@ -1,95 +1,164 @@
-import { useLocation, useNavigate } from 'react-router-dom'
-import { AppNavbar, BackLink, ArticleCard, PageHeaderCard } from '../components'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { AppNavbar, BackLink, ArticleCard, PageHeaderCard, Spinner, Button } from '../components'
 import { tokens } from '../config/tokens'
+import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
-import { type Article } from './EducationPage'
+import { useLogoutRedirect } from '../auth/useLogoutRedirect'
 import heroImage from '../assets/hero.png'
+import { buildArticleImageUrl } from '../utils/article-image'
 
-const relatedArticles: Article[] = [
-  {
-    id: 'r1',
-    title: 'Tren Pinjol Meningkat, Warganet Ingatkan Bahaya',
-    excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.',
-    category: 'Edukasi',
-    imageUrl: heroImage,
-  },
-  {
-    id: 'r2',
-    title: 'Ada Peningkatan, Utang Pinjol di Indonesia Capai Rp 80 Triliun',
-    excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.',
-    category: 'Edukasi',
-    imageUrl: heroImage,
-  },
-  {
-    id: 'r3',
-    title: '5 Cara Agar Tidak Terjerat Pinjol (Pinjaman Online)',
-    excerpt: 'Kenali ciri-ciri pinjol palsu agar tidak terjebak dalam masalah finansial yang merugikan.',
-    category: 'Edukasi',
-    imageUrl: heroImage,
-  },
-]
+type Article = {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  imageUrl: string
+  author?: string
+  publishedAt?: string | null
+  slug?: string
+  content?: string
+}
 
-const articleBody = {
-  summary: [
-    'Penggunaan pinjaman online (pinjol) terus menunjukkan tren peningkatan, terutama di kalangan masyarakat yang membutuhkan akses dana cepat tanpa proses rumit',
-    'Kemudahan pendaftaran, pencairan instan, serta minimnya persyaratan menjadi alasan utama pinjol semakin diminati',
-    'Di sisi lain, warganet mulai ramai mengingatkan berbagai risiko yang mengintai, seperti bunga tinggi, denda keterlambatan, dan potensi terjebak dalam lingkaran utang',
-    'Maraknya pinjol ilegal turut memperparah situasi, dengan kasus penyalahgunaan data pribadi, intimidasi penagihan, hingga ancaman terhadap pengguna',
-    'Pemerintah bersama OJK diharapkan dapat memperketat pengawasan terhadap layanan pinjol serta meningkatkan literasi keuangan masyarakat',
-    'Edukasi mengenai paerbedaan pinjol legal dan ilegal dinilai penting agar masyarakat dapat lebih bijak dalam mengambil keputusan finansial',
-  ],
-  sections: [
-    {
-      title: 'What Happened',
-      content: 'Penggunaan pinjaman online (pinjol) di Indonesia terus mengalami peningkatan dalam beberapa tahun terakhir. Fenomena ini didorong oleh kemajuan teknologi finansial (fintech) yang memungkinkan masyarakat mengakses layanan keuangan hanya melalui smartphone.',
-    },
-    {
-      title: 'Why It Matters',
-      content: 'Meskipun menawarkan kemudahan, tren ini menimbulkan kekhawatiran di tengah masyarakat. Warganet di berbagai platform media sosial mulai ramai mengingatkan potensi bahaya di balik penggunaan pinjol.',
-    },
-    {
-      title: 'The Risk',
-      content: 'Ancaman semakin besar dengan maraknya pinjol ilegal yang beroperasi tanpa izin resmi. Beberapa kasus menunjukkan adanya praktik penyalahgunaan data pribadi, seperti akses ke kontak, galeri, hingga informasi sensitif lainnya di perangkat pengguna.',
-    },
-    {
-      title: "What They're Saying",
-      content: 'Sejumlah pengguna mengaku kurang memahami syarat dan ketentuan sebelum mengajukan pinjaman. Banyak yang hanya fokus pada kemudahan pencairan dana tanpa membaca detail terkait bunga, tenor, dan konsekuensi keterlambatan pembayaran.',
-    },
-    {
-      title: "What's Next",
-      content: 'Pemerintah bersama Otoritas Jasa Keuangan (OJK) didorong untuk memperketat pengawasan terhadap layanan pinjol, khususnya yang tidak memiliki izin resmi.',
-    },
-    {
-      title: 'The Bottom Line',
-      content: 'Dengan meningkatnya tren penggunaan pinjol, masyarakat perlu lebih waspada dan tidak hanya tergilur oleh kemudahan yang ditawarkan.',
-    },
-  ],
+type ApiArticle = {
+  id_artikel: number
+  judul: string
+  slug?: string
+  kategori: string
+  author?: string
+  summary?: string
+  isi_artikel?: string
+  gambar?: string | null
+  status?: string
+  published_at?: string | null
+  created_at?: string | null
+}
+
+function toArticle(item: ApiArticle): Article {
+  return {
+    id: String(item.id_artikel),
+    title: item.judul,
+    excerpt: item.summary ?? '',
+    category: item.kategori || 'Edukasi',
+    imageUrl: buildArticleImageUrl(item.gambar) ?? heroImage,
+    author: item.author,
+    publishedAt: item.published_at ?? item.created_at ?? null,
+    slug: item.slug,
+    content: item.isi_artikel,
+  }
+}
+
+function sortByNewest(items: Article[]): Article[] {
+  return [...items].sort((a, b) => {
+    const aTime = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+    const bTime = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
+
+    return bTime - aTime
+  })
 }
 
 export function ArticleDetailPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const article = (location.state as { article?: Article } | null)?.article
+  const { slugOrId } = useParams()
+  const handleLogout = useLogoutRedirect()
+  const [article, setArticle] = useState<Article | null>(null)
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  if (!article) {
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadArticle() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const listRes = await fetch(`${apiConfig.baseUrl}/api/artikel?per_page=50`, { signal: controller.signal })
+        const listJson = await listRes.json()
+        if (!listRes.ok || !listJson.success) {
+          throw new Error(listJson.message || 'Gagal memuat artikel')
+        }
+
+        const articles: Article[] = (listJson.data ?? []).map((item: ApiArticle) => toArticle(item))
+        const current = articles.find((item) => item.slug === slugOrId || item.id === slugOrId || item.title === slugOrId) ?? null
+
+        if (!current) {
+          throw new Error('Artikel tidak ditemukan')
+        }
+
+        setArticle(current)
+
+        const detailRes = await fetch(`${apiConfig.baseUrl}/api/artikel/${current.id}`, { signal: controller.signal })
+        const detailJson = await detailRes.json()
+        if (detailRes.ok && detailJson.success) {
+          setArticle(toArticle(detailJson.data as ApiArticle))
+        }
+
+        setRelatedArticles(sortByNewest(articles.filter((item) => item.id !== current.id)).slice(0, 3))
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          setError((err as Error).message || 'Gagal memuat artikel')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (slugOrId) {
+      loadArticle()
+    }
+
+    return () => controller.abort()
+  }, [slugOrId])
+
+  const hasRichContent = useMemo(() => Boolean(article?.content?.trim()), [article])
+
+  const handleGoToAnotherArticle = () => {
+    const nextArticle = relatedArticles[0]
+    if (nextArticle) {
+      navigate(`/education/article/${encodeURIComponent(nextArticle.slug ?? nextArticle.id)}`)
+      return
+    }
+
     navigate(paths.education)
-    return null
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <AppNavbar onLogout={handleLogout} />
+        <main className="mx-auto flex min-h-[60vh] w-full max-w-6xl items-center justify-center px-6 py-8">
+          <Spinner />
+        </main>
+      </div>
+    )
+  }
+
+  if (error || !article) {
+    return (
+      <div className="min-h-screen bg-white">
+        <AppNavbar onLogout={handleLogout} />
+        <main className="mx-auto w-full max-w-6xl px-6 py-8">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error || 'Artikel tidak ditemukan'}
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <AppNavbar onLogout={() => navigate(paths.login)} />
+      <AppNavbar onLogout={handleLogout} />
 
       <main className="mx-auto w-full max-w-6xl flex flex-col gap-6 px-6 py-8">
-
-        {/* Header */}
         <PageHeaderCard
-          back={<BackLink toLabel="Homepage" to={paths.home} />}
+          back={<BackLink toLabel="Education" to={paths.education} />}
           title={article.title}
           description={article.excerpt}
         />
 
-        {/* Gambar hero */}
         <img
           src={article.imageUrl}
           alt={article.title}
@@ -97,79 +166,58 @@ export function ArticleDetailPage() {
           style={{ borderRadius: tokens.radius.lg }}
         />
 
-        {/* Konten + Sidebar */}
         <div className="flex items-start gap-10">
-
-          {/* Konten utama */}
           <div className="flex flex-col gap-6 flex-1 min-w-0">
-
-            {/* Summary */}
-            <div className="flex flex-col gap-3">
-              <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>
-                Summary
-              </h2>
-              <ul className="flex flex-col gap-2">
-                {articleBody.summary.map((point, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm" style={{ color: tokens.colors.slate[600] }}>
-                    <span
-                      className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: tokens.colors.brand.primary }}
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
+            <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: tokens.colors.slate[500] }}>
+              <span className="rounded-full px-3 py-1" style={{ background: tokens.colors.brand.soft, color: tokens.colors.slate[900] }}>{article.category}</span>
+              {article.author && <span>Oleh {article.author}</span>}
+              {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString('id-ID')}</span>}
             </div>
 
-            {/* Sections */}
-            {articleBody.sections.map((section) => (
-              <div key={section.title} className="flex flex-col gap-2">
-                <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>
-                  {section.title}
-                </h2>
-                <p className="text-sm leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
-                  {section.content}
-                </p>
-              </div>
-            ))}
+            <div className="flex flex-col gap-3">
+              <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Ringkasan</h2>
+              <p className="text-sm leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
+                {article.excerpt}
+              </p>
+            </div>
 
-            {/* Navigation */}
-            <div
-              className="flex justify-between border-t pt-4 mt-2"
-              style={{ borderColor: tokens.colors.slate[200] }}
-            >
-              <button
-                className="text-sm transition-colors"
-                style={{ color: tokens.colors.slate[400] }}
-              >
-                Previous article
-              </button>
-              <button
-                className="text-sm font-medium transition-colors"
-                style={{ color: tokens.colors.brand.primary }}
-              >
-                Next Article
-              </button>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Isi Artikel</h2>
+              <div
+                className="prose max-w-none text-sm leading-relaxed prose-headings:mb-3 prose-headings:mt-6 prose-p:mb-4 prose-li:mb-2"
+                style={{ color: tokens.colors.slate[600] }}
+                dangerouslySetInnerHTML={{
+                  __html: hasRichContent ? (article.content as string) : '<p>Konten artikel belum tersedia.</p>',
+                }}
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4 mt-2" style={{ borderColor: tokens.colors.slate[200] }}>
+              <Button variant="secondary" onClick={() => navigate(paths.education)}>
+                Kembali ke edukasi
+              </Button>
+              <Button onClick={handleGoToAnotherArticle}>
+                Lihat artikel lain
+              </Button>
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="flex flex-col gap-4 w-72 shrink-0 sticky top-8">
-            <h2 className="text-base font-semibold" style={{ color: tokens.colors.slate[900] }}>
-              Baca juga
-            </h2>
+            <h2 className="text-base font-semibold" style={{ color: tokens.colors.slate[900] }}>Baca juga</h2>
             {relatedArticles.map((related) => (
               <ArticleCard
                 key={related.id}
+                id={related.id}
                 title={related.title}
                 excerpt={related.excerpt}
                 category={related.category}
                 imageUrl={related.imageUrl}
-                onClick={() => navigate(paths.articleDetail, { state: { article: related } })}
+                author={related.author}
+                publishedAt={related.publishedAt ?? undefined}
+                onClick={() => navigate(`/education/article/${encodeURIComponent(related.slug ?? related.id)}`)}
               />
             ))}
           </div>
-
         </div>
       </main>
     </div>

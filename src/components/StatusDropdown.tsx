@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import { statusPillConfig, type StatusPillValue } from './config/status-pill'
 import { tokens } from '../config/tokens'
 
@@ -8,8 +8,8 @@ type StatusDropdownProps = {
   options?: StatusPillValue[]
 }
 
-export function StatusDropdown({ status, onChange, options = ['process', 'selesai', 'pending'] }: StatusDropdownProps) {
-  const currentConfig = statusPillConfig[status] || statusPillConfig['process']
+export function StatusDropdown({ status, onChange, options = ['menunggu', 'diproses', 'selesai', 'ditolak'] }: StatusDropdownProps) {
+  const currentConfig = statusPillConfig[status] || statusPillConfig['menunggu']
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value as StatusPillValue)

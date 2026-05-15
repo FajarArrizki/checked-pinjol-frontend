@@ -9,8 +9,6 @@ export function RiskLevelIndicator({ dailyInterest }: RiskLevelIndicatorProps) {
 
   const isHigh = dailyInterest > 0.4
   const isMedium = dailyInterest >= 0.1 && dailyInterest <= 0.4
-  const isLow = dailyInterest < 0.1
-
   const styles = {
     bg: isHigh ? '#FEF2F2' : isMedium ? '#FFFBEB' : '#F0FDF4',
     border: isHigh ? '#FECACA' : isMedium ? '#FDE68A' : '#BBF7D0',

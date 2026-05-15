@@ -5,10 +5,13 @@ import { tokens } from '../config/tokens'
 
 type ProfileTriggerProps = {
   username: string
+  email?: string
   onLogout?: () => void
 }
 
-export function ProfileTrigger({ username, onLogout }: ProfileTriggerProps) {
+const AUTH_STORAGE_KEY = 'checked-pinjol.auth'
+
+export function ProfileTrigger({ username, email, onLogout }: ProfileTriggerProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -62,17 +65,25 @@ export function ProfileTrigger({ username, onLogout }: ProfileTriggerProps) {
 
       {open ? (
         <div
-          className="absolute right-0 mt-2 min-w-[160px] border bg-white p-2 shadow-sm"
+          className="absolute right-0 mt-2 min-w-[220px] border bg-white p-2 shadow-sm"
           style={{
             borderRadius: tokens.radius.md,
             borderColor: tokens.colors.slate[200],
             boxShadow: tokens.shadow.sm,
           }}
         >
+          <div className="px-3 py-2">
+            <p className="text-sm font-medium" style={{ color: tokens.colors.slate[900] }}>{username}</p>
+            <p className="mt-0.5 break-all text-xs" style={{ color: tokens.colors.slate[500] }}>{email ?? '-'}</p>
+          </div>
+
+          <div className="my-1 border-t" style={{ borderColor: tokens.colors.slate[200] }} />
+
           <button
             type="button"
             onClick={() => {
               setOpen(false)
+              localStorage.removeItem(AUTH_STORAGE_KEY)
               onLogout?.()
             }}
             className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm font-medium hover:bg-slate-50"

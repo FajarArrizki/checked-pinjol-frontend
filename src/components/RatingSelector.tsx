@@ -9,9 +9,10 @@ import { tokens } from '../config/tokens'
 
 type RatingSelectorProps = {
   defaultValue?: RatingValue
+  onChange?: (value: RatingValue) => void
 }
 
-export function RatingSelector({ defaultValue = 5 }: RatingSelectorProps) {
+export function RatingSelector({ defaultValue = 5, onChange }: RatingSelectorProps) {
   const [rating, setRating] = useState<RatingValue>(defaultValue)
 
   return (
@@ -31,7 +32,10 @@ export function RatingSelector({ defaultValue = 5 }: RatingSelectorProps) {
             <button
               key={value}
               type="button"
-              onClick={() => setRating(value)}
+              onClick={() => {
+                setRating(value)
+                onChange?.(value)
+              }}
               className="transition-transform hover:scale-105"
               aria-label={`Rating ${value}`}
             >

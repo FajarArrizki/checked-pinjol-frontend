@@ -1,12 +1,14 @@
 import { articleCardConfig } from './config/article-card'
-import { surfaceConfig } from './config/surface'
 import { tokens } from '../config/tokens'
 
 type ArticleCardProps = {
+  id?: string
   title: string
   excerpt: string
   category: string
-  imageUrl: string
+  imageUrl?: string
+  author?: string
+  publishedAt?: string
   onClick?: () => void
   className?: string
 }
@@ -16,6 +18,8 @@ export function ArticleCard({
   excerpt,
   category,
   imageUrl,
+  author,
+  publishedAt,
   onClick,
   className = '',
 }: ArticleCardProps) {
@@ -29,12 +33,26 @@ export function ArticleCard({
       }}
       onClick={onClick}
     >
-      <img
-        src={imageUrl}
-        alt={title}
-        className="w-full aspect-[16/9] object-cover"
-        style={{ borderRadius: '0.75rem' }} // rounded-xl
-      />
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full aspect-[16/9] object-cover"
+          style={{ borderRadius: '0.75rem' }}
+        />
+      ) : (
+        <div
+          className="flex aspect-[16/9] w-full items-center justify-center"
+          style={{ borderRadius: '0.75rem', backgroundColor: tokens.colors.slate[100], color: tokens.colors.slate[400] }}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-10 w-10">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 7.5A2.25 2.25 0 0 1 6 5.25h12A2.25 2.25 0 0 1 20.25 7.5v9A2.25 2.25 0 0 1 18 18.75H6a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 15 2.25-2.25 2.25 2.25 3-3 3 3" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 9.75h.008v.008H9V9.75Z" />
+          </svg>
+        </div>
+      )}
       <div className="flex flex-col gap-3">
         <span
           className="inline-flex self-start px-3 py-1 text-xs font-bold border"
@@ -50,6 +68,11 @@ export function ArticleCard({
         <h3 className="text-sm font-semibold leading-snug line-clamp-2" style={{ color: tokens.colors.slate[900] }}>
           {title}
         </h3>
+        {(author || publishedAt) && (
+          <p className="text-xs" style={{ color: tokens.colors.slate[500] }}>
+            {author ? `Oleh ${author}` : ''}{author && publishedAt ? ' • ' : ''}{publishedAt ? new Date(publishedAt).toLocaleDateString('id-ID') : ''}
+          </p>
+        )}
         <p className="text-xs leading-relaxed line-clamp-2" style={{ color: tokens.colors.slate[500] }}>
           {excerpt}
         </p>
