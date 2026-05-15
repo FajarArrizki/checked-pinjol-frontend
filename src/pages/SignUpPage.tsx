@@ -57,7 +57,7 @@ export function SignUpPage() {
               <Input
                 label="Nama Lengkap"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="Masukkan nama lengkap"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -67,12 +67,12 @@ export function SignUpPage() {
               <Input
                 label="Email"
                 type="email"
-                placeholder="Enter your email address"
+                placeholder="Masukkan alamat email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <span className="text-xs text-slate-400">
-                We will never share your email.
+                Email Anda tidak akan dibagikan kepada pihak lain.
               </span>
               </div>
 
@@ -90,12 +90,12 @@ export function SignUpPage() {
               <Input
                 label="Password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Masukkan password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <span className="text-xs text-slate-400">
-                Make sure your password is secure.
+                Pastikan password Anda aman.
               </span>
             </div>
 
@@ -103,7 +103,7 @@ export function SignUpPage() {
               <Input
                 label="Konfirmasi Password"
                 type="password"
-                placeholder="Re-enter your password"
+                placeholder="Masukkan ulang password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
@@ -132,12 +132,12 @@ export function SignUpPage() {
 
           {/* Login link */}
           <p className="text-sm text-slate-500">
-            Already have an account?{' '}
+            Sudah punya akun?{' '}
             <button
               className="text-blue-500 font-medium hover:underline"
               onClick={() => navigate(paths.login)}
             >
-              Log In
+              Masuk
             </button>
           </p>
 

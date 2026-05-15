@@ -71,7 +71,7 @@ export function BrandIcon({ variant = 'navbar' }: BrandIconProps) {
         </svg>
       </span>
 
-      <span style={{ color: tokens.colors.black }} className="text-base font-semibold">CheckedPinjol</span>
+      <span style={{ color: tokens.colors.black }} className="text-base font-semibold">CekPinjol</span>
     </div>
   )
 }
