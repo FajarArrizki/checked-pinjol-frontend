@@ -9,7 +9,7 @@ import { isApiError, verifyAdminTwoFactor, type PendingAdminTwoFactor } from '..
 
 export function LoginPage() {
   const location = useLocation()
-  const { login, isAuthenticated, role } = useAuth()
+  const { login, establishSession, isAuthenticated, role } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
@@ -65,6 +65,7 @@ export function LoginPage() {
 
     try {
       const session = await verifyAdminTwoFactor(twoFactorState.challengeToken, otp.trim())
+      establishSession(session)
       navigate(getRoleHomePath(session.user.role), { replace: true })
     } catch (err) {
       setError(isApiError(err) ? err.message : 'Verifikasi OTP gagal')

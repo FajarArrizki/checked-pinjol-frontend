@@ -15,6 +15,7 @@ type AuthContextValue = {
   role: AuthRole | null
   isAuthenticated: boolean
   login: (input: LoginInput, mode?: LoginMode) => Promise<AuthSession>
+  establishSession: (session: AuthSession) => void
   register: (input: RegisterInput) => Promise<AuthSession>
   logout: () => void
 }
@@ -49,12 +50,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
   })
 
   const value = useMemo<AuthContextValue>(() => {
-    async function login(input: LoginInput, mode: LoginMode = 'user'): Promise<AuthSession> {
-      const session = mode === 'admin' ? await loginAdmin(input) : await loginUser(input)
+    function establishSession(session: AuthSession): void {
       const normalized = { token: session.token, user: session.user }
       setStored(normalized)
       saveStoredAuth(normalized)
-      return normalized
+    }
+
+    async function login(input: LoginInput, mode: LoginMode = 'user'): Promise<AuthSession> {
+      const session = mode === 'admin' ? await loginAdmin(input) : await loginUser(input)
+      establishSession(session)
+      return { token: session.token, user: session.user }
     }
 
     async function register(input: RegisterInput): Promise<AuthSession> {
@@ -72,6 +77,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       role: stored?.user.role ?? null,
       isAuthenticated: Boolean(stored?.token && stored?.user),
       login,
+      establishSession,
       register,
       logout,
     }
