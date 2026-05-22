@@ -57,6 +57,19 @@ function sortByNewest(items: Article[]): Article[] {
   })
 }
 
+function stripDuplicateArticleHeading(content: string | undefined, title: string): string {
+  if (!content?.trim()) return '<p>Konten artikel belum tersedia.</p>'
+
+  const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim()
+  const headingPattern = new RegExp(`<h[1-6][^>]*>\\s*${escapedTitle}\\s*<\\/h[1-6]>`, 'gi')
+  const wrappedHeadingPattern = new RegExp(`<([a-z0-9]+)[^>]*>\\s*<h[1-6][^>]*>\\s*${escapedTitle}\\s*<\\/h[1-6]>\\s*<\\/\\1>`, 'gi')
+
+  return content
+    .replace(wrappedHeadingPattern, '')
+    .replace(headingPattern, '')
+    .trim() || '<p>Konten artikel belum tersedia.</p>'
+}
+
 export function ArticleDetailPage() {
   const navigate = useNavigate()
   const { slugOrId } = useParams()
@@ -176,7 +189,7 @@ export function ArticleDetailPage() {
 
             <div className="flex flex-col gap-3">
               <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Ringkasan</h2>
-              <p className="text-sm leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
+              <p className="max-w-[100ch] break-words text-sm leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
                 {article.excerpt}
               </p>
             </div>
@@ -184,10 +197,10 @@ export function ArticleDetailPage() {
             <div className="flex flex-col gap-3">
               <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Isi Artikel</h2>
               <div
-                className="prose max-w-none text-sm leading-relaxed prose-headings:mb-3 prose-headings:mt-6 prose-p:mb-4 prose-li:mb-2"
+                className="prose max-w-[100ch] overflow-hidden break-words text-sm leading-relaxed prose-headings:mb-3 prose-headings:mt-6 prose-p:mb-4 prose-li:mb-2 prose-img:max-w-full prose-img:h-auto prose-video:max-w-full prose-video:h-auto prose-iframe:max-w-full prose-a:break-all prose-pre:max-w-full prose-pre:overflow-x-auto prose-table:block prose-table:max-w-full prose-table:overflow-x-auto [&_*]:max-w-full [&>h1:first-child]:hidden [&>h2:first-child]:hidden [&>h3:first-child]:hidden"
                 style={{ color: tokens.colors.slate[600] }}
                 dangerouslySetInnerHTML={{
-                  __html: hasRichContent ? (article.content as string) : '<p>Konten artikel belum tersedia.</p>',
+                  __html: stripDuplicateArticleHeading(hasRichContent ? (article.content as string) : undefined, article.title),
                 }}
               />
             </div>

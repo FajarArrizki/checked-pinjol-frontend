@@ -5,11 +5,13 @@ import { inputConfig } from './config/input'
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string
   error?: string
+  prefix?: string
 }
 
 export function Input({
   label,
   error,
+  prefix,
   className = '',
   ...props
 }: InputProps) {
@@ -31,6 +33,7 @@ export function Input({
             focus:outline-none focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:bg-white focus:shadow-sm
             hover:border-slate-300
             disabled:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-400
+            ${prefix ? 'pl-12' : ''}
             ${isPasswordField ? 'pr-12' : ''}
             ${error ? 'focus:ring-red-400 border-red-400' : ''}
             ${className}
@@ -42,6 +45,12 @@ export function Input({
           {...props}
           type={resolvedType}
         />
+
+        {prefix ? (
+          <span className="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-4 text-sm font-medium text-slate-500">
+            {prefix}
+          </span>
+        ) : null}
 
         {isPasswordField ? (
           <button

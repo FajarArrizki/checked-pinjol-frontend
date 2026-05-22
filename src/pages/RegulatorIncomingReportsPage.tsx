@@ -4,7 +4,6 @@ import 'react-quill-new/dist/quill.snow.css'
 
 import {
   TableList,
-  StatusDropdown,
   PaginationBar,
   SearchBar,
   CategoryPill,
@@ -21,7 +20,6 @@ import {
   getAdminReports,
   getAdminReportDetail,
   replyAdminReport,
-  updateAdminReportStatus,
   type PaginatedReportsResponse,
   type AdminReportDetail,
 } from '../auth/adminApi'
@@ -94,9 +92,7 @@ export function RegulatorIncomingReportsPage() {
       ? 'diproses'
       : (params?.active ?? activeFilter) === 'Selesai'
         ? 'selesai'
-        : (params?.active ?? activeFilter) === 'Pending'
-          ? 'menunggu'
-          : ''
+        : ''
 
     const response = await getAdminReports(token, {
       page: params?.page ?? currentPage,
@@ -176,37 +172,17 @@ export function RegulatorIncomingReportsPage() {
   }, [token, selectedReportId])
 
   const filterCounts = useMemo(() => ({
-    menunggu: activeFilter === 'Pending' ? reports.length : meta.total,
     diproses: activeFilter === 'Diproses' ? reports.length : meta.total,
     selesai: activeFilter === 'Selesai' ? reports.length : meta.total,
   }), [reports.length, activeFilter, meta.total])
 
   const filters = [
     'Semua',
-    `Menunggu (${filterCounts.menunggu})`,
     `Diproses (${filterCounts.diproses})`,
     `Selesai (${filterCounts.selesai})`,
   ]
 
   const totalPages = meta.total_pages
-
-  async function handleStatusChange(id: number, newStatus: StatusPillValue) {
-    if (!token) return
-
-    const previousReport = reports.find((item) => item.id === id)
-    if (!previousReport) return
-
-    setError(null)
-    setReports((curr) => curr.map((r) => (r.id === id ? { ...r, status: newStatus } : r)))
-
-    try {
-      await updateAdminReportStatus(token, id, toBackendStatus(newStatus))
-      await loadReports()
-    } catch (err: unknown) {
-      setReports((curr) => curr.map((r) => (r.id === id ? { ...r, status: previousReport.status } : r)))
-      setError(err instanceof Error ? err.message : 'Gagal memperbarui status laporan')
-    }
-  }
 
   function openDetail(id: number) {
     const summary = reports.find((item) => item.id === id) ?? null
@@ -269,7 +245,7 @@ export function RegulatorIncomingReportsPage() {
   return (
     <div className="w-full h-full flex flex-col gap-6 p-[15px] overflow-y-auto custom-scrollbar">
       <div>
-        <h1 className="text-2xl font-semibold" style={{ color: tokens.colors.slate[700] }}>
+        <h1 className="pb-5 text-2xl font-semibold" style={{ color: tokens.colors.slate[700] }}>
           Laporan Masuk
         </h1>
 
@@ -278,7 +254,7 @@ export function RegulatorIncomingReportsPage() {
         <TableList
           title=""
           headerContent={
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               <SearchBar
                 placeholder="Cari laporan..."
                 value={searchQuery}
@@ -339,10 +315,7 @@ export function RegulatorIncomingReportsPage() {
                 {report.date}
               </td>
               <td className="px-4 py-4 text-sm" onClick={(e) => e.stopPropagation()}>
-                <StatusDropdown
-                  status={report.status}
-                  onChange={(newStatus) => handleStatusChange(report.id, newStatus)}
-                />
+                <StatusPill status={report.status} />
               </td>
               <td className="px-4 py-4 text-sm font-medium" style={{ color: tokens.colors.slate[400] }} onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-3">
@@ -489,7 +462,6 @@ export function RegulatorIncomingReportsPage() {
                 className="w-full px-4 py-3 text-sm outline-none"
                 style={{ border: `1px solid ${tokens.colors.slate[200]}`, borderRadius: tokens.radius.sm }}
               >
-                <option value="menunggu">Menunggu</option>
                 <option value="diproses">Diproses</option>
                 <option value="selesai">Selesai</option>
                 <option value="ditolak">Ditolak</option>
@@ -534,17 +506,17 @@ export function RegulatorIncomingReportsPage() {
 }
 
 function mapStatus(status: string): StatusPillValue {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'menunggu' || status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }
 
 function toBackendStatus(status: StatusPillValue): string {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }

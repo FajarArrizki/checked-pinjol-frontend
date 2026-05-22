@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import {
+  ratingSelectorPlaceholder,
   ratingSelectorLabels,
   ratingSelectorStarStyle,
   type RatingValue,
@@ -12,8 +13,8 @@ type RatingSelectorProps = {
   onChange?: (value: RatingValue) => void
 }
 
-export function RatingSelector({ defaultValue = 5, onChange }: RatingSelectorProps) {
-  const [rating, setRating] = useState<RatingValue>(defaultValue)
+export function RatingSelector({ defaultValue, onChange }: RatingSelectorProps) {
+  const [rating, setRating] = useState<RatingValue | null>(defaultValue ?? null)
 
   return (
     <div
@@ -24,9 +25,9 @@ export function RatingSelector({ defaultValue = 5, onChange }: RatingSelectorPro
         boxShadow: tokens.shadow.sm,
       }}
     >
-      <div className="flex items-center gap-2">
-        {([1, 2, 3, 4, 5] as RatingValue[]).map((value) => {
-          const active = value <= rating
+        <div className="flex items-center gap-2">
+          {([1, 2, 3, 4, 5] as RatingValue[]).map((value) => {
+          const active = rating !== null && value <= rating
 
           return (
             <button
@@ -57,7 +58,9 @@ export function RatingSelector({ defaultValue = 5, onChange }: RatingSelectorPro
         })}
       </div>
 
-      <p className="mt-3 text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>{ratingSelectorLabels[rating]}</p>
+      <p className="mt-3 text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
+        {rating === null ? ratingSelectorPlaceholder : ratingSelectorLabels[rating]}
+      </p>
     </div>
   )
 }

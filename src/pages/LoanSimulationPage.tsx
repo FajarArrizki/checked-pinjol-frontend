@@ -5,6 +5,7 @@ import {
   BackLink,
   Button,
   Input,
+  Modal,
   PageHeaderCard,
   RiskLevelIndicator,
   LoanSimulationResultCard,
@@ -17,7 +18,25 @@ import { paths } from '../router/paths'
 import { useLogoutRedirect } from '../auth/useLogoutRedirect'
 import { useAuth } from '../auth/AuthContext'
 
-const tenorOptions = [7, 14, 21, 30, 60, 90]
+function normalizeCurrencyInput(value: string) {
+  return value.replace(/\D/g, '')
+}
+
+function formatCurrencyInput(value: string) {
+  if (!value) return ''
+  return new Intl.NumberFormat('id-ID', {
+    maximumFractionDigits: 0,
+  }).format(Number(value))
+}
+
+function normalizeIntegerInput(value: string) {
+  return value.replace(/\D/g, '')
+}
+
+function resolveTenorDays(tenorValue: string, tenorUnit: 'hari' | 'bulan') {
+  const numericValue = Number(tenorValue) || 0
+  return tenorUnit === 'bulan' ? numericValue * 30 : numericValue
+}
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -28,11 +47,13 @@ function formatCurrency(value: number) {
 }
 
 export function LoanSimulationPage() {
-  const [loanAmount, setLoanAmount] = useState('1000000')
+  const [loanAmount, setLoanAmount] = useState('')
   const [tenor, setTenor] = useState('30')
+  const [tenorUnit, setTenorUnit] = useState<'hari' | 'bulan'>('hari')
   const [dailyInterest, setDailyInterest] = useState('0.8')
-  const [adminFee, setAdminFee] = useState('25000')
+  const [adminFee, setAdminFee] = useState('')
   const [isAgreed, setIsAgreed] = useState(false)
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [savedSimulations, setSavedSimulations] = useState<SavedSimulationItem[]>([])
   const [result, setResult] = useState<null | {
     monthlyInstallment: string
@@ -48,10 +69,10 @@ export function LoanSimulationPage() {
   const [loading, setLoading] = useState(false)
   const handleLogout = useLogoutRedirect()
   const { token } = useAuth()
+  const tenorDays = resolveTenorDays(tenor, tenorUnit)
 
   const calculation = useMemo(() => {
     const principal = Number(loanAmount) || 0
-    const tenorDays = Number(tenor) || 0
     const interestRate = Number(dailyInterest) || 0
     const admin = Number(adminFee) || 0
 
@@ -71,13 +92,16 @@ export function LoanSimulationPage() {
       apr,
       monthlyInterestRate,
     }
-  }, [loanAmount, tenor, dailyInterest, adminFee])
+  }, [loanAmount, tenorDays, dailyInterest, adminFee])
 
   const handleSaveSimulation = () => {
+    if (!loanAmount || tenorDays <= 0) return
+
     const newItem: SavedSimulationItem = {
       id: Date.now().toString(),
       loanAmount,
       tenor,
+      tenorUnit,
       dailyInterest,
       adminFee,
       totalPayment: formatCurrency(calculation.totalPayment),
@@ -85,7 +109,7 @@ export function LoanSimulationPage() {
     }
 
     setSavedSimulations((prev) => [newItem, ...prev].slice(0, 5))
-    alert('Simulasi berhasil disimpan!')
+    setIsSaveModalOpen(true)
   }
 
   const handleSaveToBackend = async () => {
@@ -97,7 +121,7 @@ export function LoanSimulationPage() {
       },
       body: JSON.stringify({
         jumlah_pinjaman: Number(loanAmount),
-        tenor_hari: Number(tenor),
+        tenor_hari: tenorDays,
         bunga_per_hari: Number(dailyInterest),
         biaya_admin: Number(adminFee),
       }),
@@ -116,7 +140,7 @@ export function LoanSimulationPage() {
         },
         body: JSON.stringify({
           jumlah_pinjaman: Number(loanAmount),
-          tenor_hari: Number(tenor),
+          tenor_hari: tenorDays,
           bunga_per_hari: Number(dailyInterest),
           biaya_admin: Number(adminFee),
         }),
@@ -135,7 +159,7 @@ export function LoanSimulationPage() {
         monthlyInterest: `${(Number(dailyInterest) * 30).toFixed(1)}%`,
         apr: `${Number(data.apr_tahunan).toFixed(1)}%`,
         principal: formatCurrency(Number(data.jumlah_pinjaman)),
-        interestLabel: `Bunga (${dailyInterest}% x ${tenor} hari)`,
+        interestLabel: `Bunga (${dailyInterest}% x ${tenorDays} hari)`,
         interestAmount: formatCurrency(Number(data.total_bunga)),
         adminFee: formatCurrency(Number(data.biaya_admin)),
         total: formatCurrency(Number(data.total_bayar)),
@@ -148,6 +172,7 @@ export function LoanSimulationPage() {
   const handleReloadSimulation = (item: SavedSimulationItem) => {
     setLoanAmount(item.loanAmount)
     setTenor(item.tenor)
+    setTenorUnit(item.tenorUnit)
     setDailyInterest(item.dailyInterest)
     setAdminFee(item.adminFee)
     setIsAgreed(true)
@@ -176,41 +201,48 @@ export function LoanSimulationPage() {
           >
             <Input
               label="Jumlah Pinjaman"
+              prefix="Rp"
               inputMode="numeric"
-              value={loanAmount}
-              onChange={(event) => setLoanAmount(event.target.value)}
+              value={formatCurrencyInput(loanAmount)}
+              onChange={(event) => setLoanAmount(normalizeCurrencyInput(event.target.value))}
               placeholder="Masukkan jumlah pinjaman"
             />
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
-                Tenor (hari)
+                Tenor
               </label>
-              <div className="relative">
-                <select
+              <div className="grid grid-cols-[minmax(0,1fr)_160px] gap-3">
+                <Input
+                  inputMode="numeric"
                   value={tenor}
-                  onChange={(event) => setTenor(event.target.value)}
-                  className="w-full appearance-none px-4 pr-10 py-3 text-sm transition-all duration-200 outline-none hover:border-slate-300 focus:bg-white focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:shadow-sm"
-                  style={{
-                    borderRadius: tokens.radius.md,
-                    border: `1px solid ${tokens.colors.slate[200]}`,
-                    backgroundColor: tokens.colors.slate[50],
-                    color: tokens.colors.slate[900],
-                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.02)',
-                  }}
-                >
-                  {tenorOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option} hari
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                  </svg>
+                  onChange={(event) => setTenor(normalizeIntegerInput(event.target.value))}
+                  placeholder="Masukkan tenor"
+                />
+                <div className="relative">
+                  <select
+                    value={tenorUnit}
+                    onChange={(event) => setTenorUnit(event.target.value as 'hari' | 'bulan')}
+                    className="w-full appearance-none px-4 pr-10 py-3 text-sm transition-all duration-200 outline-none hover:border-slate-300 focus:bg-white focus:ring-2 focus:ring-[#1AA86E] focus:border-transparent focus:shadow-sm"
+                    style={{
+                      borderRadius: tokens.radius.md,
+                      border: `1px solid ${tokens.colors.slate[200]}`,
+                      backgroundColor: tokens.colors.slate[50],
+                      color: tokens.colors.slate[900],
+                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.02)',
+                    }}
+                  >
+                    <option value="hari">Hari</option>
+                    <option value="bulan">Bulan</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </div>
                 </div>
               </div>
+              <p className="text-xs text-slate-400">Jika memilih bulan, sistem otomatis menghitung 1 bulan = 30 hari.</p>
             </div>
 
             <Input
@@ -223,9 +255,10 @@ export function LoanSimulationPage() {
 
             <Input
               label="Biaya Admin (Opsional)"
+              prefix="Rp"
               inputMode="numeric"
-              value={adminFee}
-              onChange={(event) => setAdminFee(event.target.value)}
+              value={formatCurrencyInput(adminFee)}
+              onChange={(event) => setAdminFee(normalizeCurrencyInput(event.target.value))}
               placeholder="Masukkan biaya admin"
             />
 
@@ -244,7 +277,7 @@ export function LoanSimulationPage() {
                 </span>
               </label>
 
-              <Button className="w-full py-3 font-semibold" disabled={!isAgreed || loading} onClick={async () => { await handleSimulate(); await handleSaveToBackend() }}>
+              <Button className="w-full py-3 font-semibold" disabled={!isAgreed || loading || !loanAmount || tenorDays <= 0} onClick={async () => { await handleSimulate(); await handleSaveToBackend() }}>
                 {loading ? 'Menghitung...' : 'Simulasikan Sekarang'}
               </Button>
             </div>
@@ -256,6 +289,7 @@ export function LoanSimulationPage() {
                 </label>
                 <button 
                   onClick={handleSaveSimulation}
+                  disabled={!loanAmount || tenorDays <= 0}
                   className="text-xs font-semibold text-brand-primary hover:underline"
                 >
                   + Simpan Sekarang
@@ -271,10 +305,35 @@ export function LoanSimulationPage() {
           </div>
         </section>
 
-        <div className="flex flex-wrap justify-end gap-3">
-          <Button variant="secondary">Bagikan</Button>
-        </div>
       </main>
+
+      <Modal
+        isOpen={isSaveModalOpen}
+        onClose={() => setIsSaveModalOpen(false)}
+        title="Simulasi Berhasil Disimpan"
+        description="Riwayat simulasi berhasil ditambahkan dan bisa dibuka kembali dari daftar simulasi tersimpan."
+      >
+        <div className="flex flex-col items-center gap-6 py-4 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-500">
+            <svg className="h-10 w-10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm text-slate-600">
+              Simulasi untuk tenor {tenor} {tenorUnit} sudah berhasil disimpan.
+            </p>
+            <p className="text-xs text-slate-400">
+              Kamu bisa membuka ulang dari bagian Simulasi Tersimpan kapan saja.
+            </p>
+          </div>
+
+          <Button className="w-full" onClick={() => setIsSaveModalOpen(false)}>
+            Selesai
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }

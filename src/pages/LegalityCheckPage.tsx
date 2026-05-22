@@ -1,16 +1,27 @@
 import { useState } from 'react'
-import { AppNavbar, BackLink, Button, Input, PageHeaderCard, LegalityResultCard } from '../components'
+import { AppNavbar, BackLink, Button, Input, PageHeaderCard, LegalityResultCard, ReviewCommentsModal } from '../components'
 import { tokens } from '../config/tokens'
 import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
 import { useAuth } from '../auth/AuthContext'
 import { useLogoutRedirect } from '../auth/useLogoutRedirect'
 
+type CheckResultItem = {
+  id_pinjol: number
+  nama_pinjol: string
+  status_pinjol: string
+  website?: string
+  tahun_berdiri?: string
+  alamat?: string
+  rating_rata_rata?: number
+  total_ulasan?: number
+}
+
 type CheckResult = {
   ditemukan: boolean
   kata_kunci: string
   total: number
-  hasil: Array<{ id_pinjol: number; nama_pinjol: string; status_pinjol: string; website?: string; tahun_berdiri?: string; alamat?: string }>
+  hasil: CheckResultItem[]
   pesan: string
 } | null
 
@@ -19,6 +30,7 @@ export function LegalityCheckPage() {
   const { token } = useAuth()
   const [appName, setAppName] = useState('')
   const [result, setResult] = useState<CheckResult>(null)
+  const [reviewTarget, setReviewTarget] = useState<CheckResultItem | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -78,7 +90,10 @@ export function LegalityCheckPage() {
               website={result.hasil[0]?.website}
               alamat={result.hasil[0]?.alamat}
               tahunBerdiri={result.hasil[0]?.tahun_berdiri}
+              rating={Number(result.hasil[0]?.rating_rata_rata ?? 0)}
+              totalReviews={Number(result.hasil[0]?.total_ulasan ?? 0)}
               message={result.pesan}
+              onOpenReviews={() => setReviewTarget(result.hasil[0] ?? null)}
             />
           )}
 
@@ -91,6 +106,13 @@ export function LegalityCheckPage() {
           </Button>
         </section>
       </main>
+
+      <ReviewCommentsModal
+        isOpen={reviewTarget !== null}
+        onClose={() => setReviewTarget(null)}
+        pinjolId={reviewTarget?.id_pinjol ?? null}
+        pinjolName={reviewTarget?.nama_pinjol ?? ''}
+      />
     </div>
   )
 }

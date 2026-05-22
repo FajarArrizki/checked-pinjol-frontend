@@ -10,6 +10,7 @@ import {
 import { tokens } from '../config/tokens'
 import { apiConfig } from '../config/api'
 import { useAuth } from '../auth/AuthContext'
+import { isStrongPassword, passwordRequirementText } from '../utils/validation'
 
 type RegulationItem = {
   id_regulasi: number
@@ -333,6 +334,11 @@ export function RegulatorSettingsPage() {
     }
 
     if (passwordStep === 2 && twoFactorEnabled) {
+      if (!isStrongPassword(pwNew)) {
+        setPasswordMessage(passwordRequirementText)
+        return
+      }
+
       setPasswordStep(4)
       setPasswordMessage('')
       return
@@ -340,6 +346,11 @@ export function RegulatorSettingsPage() {
 
     if (passwordStep === 2 || passwordStep === 4) {
       if (!token || !pwCurrent || !pwNew) return
+
+      if (!isStrongPassword(pwNew)) {
+        setPasswordMessage(passwordRequirementText)
+        return
+      }
 
       setPasswordSaving(true)
       setPasswordMessage('')
@@ -374,7 +385,8 @@ export function RegulatorSettingsPage() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-8 p-[15px]">
+    <div className="h-full w-full overflow-y-auto custom-scrollbar p-[15px]">
+      <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-2xl font-semibold mb-6" style={{ color: tokens.colors.slate[700] }}>
           Pengaturan Akun & Regulasi
@@ -618,16 +630,21 @@ export function RegulatorSettingsPage() {
             />
           )}
           {passwordStep === 2 && (
-            <Input 
-              label="Kata Sandi Baru" 
-              type="password"
-              placeholder="••••••••" 
-              value={pwNew}
-              onChange={(e) => setPwNew(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && pwNew) void handlePasswordNext()
-              }}
-            />
+            <div className="flex flex-col gap-1">
+              <Input 
+                label="Kata Sandi Baru" 
+                type="password"
+                placeholder="••••••••" 
+                value={pwNew}
+                onChange={(e) => setPwNew(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && pwNew) void handlePasswordNext()
+                }}
+              />
+              <span className="text-xs text-slate-400">
+                {passwordRequirementText}
+              </span>
+            </div>
           )}
           {passwordStep === 4 && (
             <Input
@@ -669,6 +686,7 @@ export function RegulatorSettingsPage() {
           </div>
         </div>
       </Modal>
+      </div>
     </div>
   )
 }

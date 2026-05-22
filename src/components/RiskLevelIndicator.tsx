@@ -10,9 +10,10 @@ export function RiskLevelIndicator({ dailyInterest }: RiskLevelIndicatorProps) {
   const isHigh = dailyInterest > 0.4
   const isMedium = dailyInterest >= 0.1 && dailyInterest <= 0.4
   const styles = {
-    bg: isHigh ? '#FEF2F2' : isMedium ? '#FFFBEB' : '#F0FDF4',
-    border: isHigh ? '#FECACA' : isMedium ? '#FDE68A' : '#BBF7D0',
-    text: isHigh ? '#B91C1C' : isMedium ? '#B45309' : '#15803D',
+    bg: isHigh ? '#FFFBEB' : isMedium ? '#FFFBEB' : '#F0FDF4',
+    border: isHigh ? '#FDE68A' : isMedium ? '#FDE68A' : '#BBF7D0',
+    icon: isHigh ? '#B91C1C' : isMedium ? '#B45309' : '#15803D',
+    text: isHigh ? '#B45309' : isMedium ? '#B45309' : '#15803D',
     heading: isHigh ? '#991B1B' : isMedium ? '#92400E' : '#166534',
   }
 
@@ -25,7 +26,7 @@ export function RiskLevelIndicator({ dailyInterest }: RiskLevelIndicatorProps) {
         borderColor: styles.border,
       }}
     >
-      <div className="mt-0.5" style={{ color: styles.text }}>
+      <div className="mt-0.5" style={{ color: styles.icon }}>
         {isHigh ? (
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286L21.75 18m-5.786-2.143L21.75 18l-2.143-5.786" />

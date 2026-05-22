@@ -8,6 +8,7 @@ import {
   Button,
   Input,
   BuktiLampiran,
+  Modal,
 } from '../components'
 import { tokens } from '../config/tokens'
 import { apiConfig } from '../config/api'
@@ -82,6 +83,11 @@ type PreviewFile = {
   previewUrl: string | null
 }
 
+type DeleteArticleTarget = {
+  id: number
+  title: string
+}
+
 export function ManajemenKontenPage() {
   const { token } = useAuth()
   const [mode, setMode] = useState<Mode>('list')
@@ -95,9 +101,12 @@ export function ManajemenKontenPage() {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [statusSavingId, setStatusSavingId] = useState<number | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [imageFile, setImageFile] = useState<PreviewFile>({ file: null, previewUrl: null })
+  const [openActionId, setOpenActionId] = useState<number | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<DeleteArticleTarget | null>(null)
 
   useEffect(() => {
     if (!token) return
@@ -288,6 +297,38 @@ export function ManajemenKontenPage() {
     }
   }
 
+  const deleteArticle = async (articleId: number) => {
+    if (!token) return
+
+    setDeletingId(articleId)
+    setError('')
+
+    try {
+      const response = await fetch(`${apiConfig.baseUrl}/api/admin/artikel/${articleId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const json = await response.json().catch(() => null)
+      if (!response.ok) {
+        throw new Error(json?.message ?? 'Gagal menghapus artikel')
+      }
+
+      setArticles((current) => current.filter((item) => item.id_artikel !== articleId))
+      setOpenActionId(null)
+      setSuccess('Artikel berhasil dihapus')
+      if (selectedId === articleId) {
+        closeSidebar()
+      }
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Gagal menghapus artikel')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   if (!token) return null
 
   if (mode === 'create' || mode === 'edit') {
@@ -308,7 +349,7 @@ export function ManajemenKontenPage() {
             <div className="flex items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
               <label className="inline-flex cursor-pointer items-center rounded-xl border px-4 py-2 text-sm font-medium" style={{ borderColor: tokens.colors.slate[200], color: tokens.colors.slate[700] }}>
                 Upload Photo
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => onPickImage(e.target.files?.[0] ?? null)} />
+                <input type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.svg,image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={(e) => onPickImage(e.target.files?.[0] ?? null)} />
               </label>
               <span className="text-sm text-slate-500">{imageFile.file ? imageFile.file.name : 'Gunakan gambar cover untuk artikel'}</span>
             </div>
@@ -401,20 +442,61 @@ export function ManajemenKontenPage() {
                 <span className="inline-flex rounded-full border px-3 py-1 text-xs font-medium capitalize" style={{ borderColor: tokens.colors.slate[200], backgroundColor: tokens.colors.slate[50], color: tokens.colors.slate[700] }}>{article.status}</span>
               </td>
               <td className="px-4 py-4 text-sm font-medium">
-                <div onClick={(e) => e.stopPropagation()}>
-                  <select
-                    value={article.status}
-                    disabled={statusSavingId === article.id_artikel}
-                    onChange={(e) => updateArticleStatus(article.id_artikel, e.target.value as ArticleStatus)}
-                    className="w-full rounded-xl border px-3 py-2 text-xs outline-none transition-colors focus:ring-2 focus:ring-[#1AA86E]"
-                    style={{ borderColor: tokens.colors.slate[200], backgroundColor: tokens.colors.white, color: tokens.colors.slate[700] }}
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => setOpenActionId((current) => current === article.id_artikel ? null : article.id_artikel)}
+                    className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors hover:bg-slate-50"
+                    style={{ borderColor: tokens.colors.slate[200], color: tokens.colors.slate[700], backgroundColor: tokens.colors.white }}
                   >
-                    {STATUS_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                    Aksi
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+
+                  {openActionId === article.id_artikel ? (
+                    <div className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-2xl border bg-white shadow-lg" style={{ borderColor: tokens.colors.slate[200] }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openEdit(article)
+                          setOpenActionId(null)
+                        }}
+                        className="block w-full px-4 py-3 text-left text-sm transition-colors hover:bg-slate-50"
+                        style={{ color: tokens.colors.slate[700] }}
+                      >
+                        Edit Artikel
+                      </button>
+                      <div className="border-t" style={{ borderColor: tokens.colors.slate[100] }} />
+                      <div className="px-4 py-3">
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-400">Status</label>
+                        <select
+                          value={article.status}
+                          disabled={statusSavingId === article.id_artikel}
+                          onChange={(e) => updateArticleStatus(article.id_artikel, e.target.value as ArticleStatus)}
+                          className="w-full rounded-xl border px-3 py-2 text-xs outline-none transition-colors focus:ring-2 focus:ring-[#1AA86E]"
+                          style={{ borderColor: tokens.colors.slate[200], backgroundColor: tokens.colors.white, color: tokens.colors.slate[700] }}
+                        >
+                          {STATUS_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="border-t" style={{ borderColor: tokens.colors.slate[100] }} />
+                      <button
+                        type="button"
+                        disabled={deletingId === article.id_artikel}
+                        onClick={() => setDeleteTarget({ id: article.id_artikel, title: article.judul })}
+                        className="block w-full px-4 py-3 text-left text-sm transition-colors hover:bg-red-50 disabled:opacity-50"
+                        style={{ color: tokens.colors.danger.base }}
+                      >
+                        {deletingId === article.id_artikel ? 'Menghapus...' : 'Hapus Artikel'}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </td>
             </tr>
@@ -424,6 +506,32 @@ export function ManajemenKontenPage() {
         {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
         {success ? <p className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{success}</p> : null}
       </div>
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Artikel"
+        description={deleteTarget ? `Konfirmasi penghapusan artikel ${deleteTarget.title}.` : ''}
+      >
+        <div className="flex flex-col gap-5 mt-2">
+          <p className="text-sm text-slate-600">
+            Artikel yang dihapus tidak bisa dipulihkan dari dashboard. Pastikan konten ini memang sudah tidak diperlukan.
+          </p>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Batal</Button>
+            <Button
+              onClick={async () => {
+                if (!deleteTarget) return
+                await deleteArticle(deleteTarget.id)
+                setDeleteTarget(null)
+              }}
+              disabled={deleteTarget ? deletingId === deleteTarget.id : false}
+            >
+              {deleteTarget && deletingId === deleteTarget.id ? 'Menghapus...' : 'Hapus Artikel'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <div className={`absolute -top-[15px] -bottom-[15px] -right-[15px] h-[calc(100%+30px)] w-[400px] bg-white border-l border-slate-200 shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.1)] transition-transform duration-300 z-10 flex flex-col ${selectedArticle ? 'translate-x-0' : 'translate-x-full'}`}>
         {selectedArticle && (
@@ -447,7 +555,7 @@ export function ManajemenKontenPage() {
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Upload Photo</label>
-                <input type="file" accept="image/*" onChange={(e) => onPickImage(e.target.files?.[0] ?? null)} className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-[#1AA86E] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:opacity-90" />
+                <input type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.svg,image/jpeg,image/png,image/gif,image/webp,image/svg+xml" onChange={(e) => onPickImage(e.target.files?.[0] ?? null)} className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-[#1AA86E] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:opacity-90" />
               </div>
 
               <div className="flex flex-col gap-1.5">

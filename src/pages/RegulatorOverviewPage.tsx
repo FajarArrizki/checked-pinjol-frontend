@@ -4,7 +4,6 @@ import 'react-quill-new/dist/quill.snow.css'
 import {
   StatCard,
   TableList,
-  StatusDropdown,
   PaginationBar,
   SearchBar,
   CategoryPill,
@@ -16,7 +15,7 @@ import {
 import { tokens } from '../config/tokens'
 import type { StatusPillValue } from '../components/config/status-pill'
 import { useAuth } from '../auth/AuthContext'
-import { getAdminDashboard, getAdminReportDetail, replyAdminReport, updateAdminReportStatus, type AdminDashboardResponse, type AdminReportDetail } from '../auth/adminApi'
+import { getAdminDashboard, getAdminReportDetail, replyAdminReport, type AdminDashboardResponse, type AdminReportDetail } from '../auth/adminApi'
 
 type Report = {
   id: number
@@ -125,7 +124,7 @@ export function RegulatorOverviewPage() {
     {
       label: 'Laporan Tertunda',
       value: dashboard?.overview.laporan_tertunda ?? 0,
-      description: 'status menunggu',
+      description: 'belum selesai',
       descriptionHighlight: String(dashboard?.overview.laporan_tertunda ?? 0),
       icon: (
         <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -157,7 +156,7 @@ export function RegulatorOverviewPage() {
     },
   ]
 
-  const filters = ['Semua', 'Diproses', 'Selesai', 'Pending']
+  const filters = ['Semua', 'Diproses', 'Selesai']
 
   const filteredReports = reports.filter((report) => {
     const matchesSearch =
@@ -167,30 +166,11 @@ export function RegulatorOverviewPage() {
     if (activeFilter === 'Semua') return matchesSearch
     if (activeFilter === 'Diproses') return matchesSearch && report.status === 'diproses'
     if (activeFilter === 'Selesai') return matchesSearch && report.status === 'selesai'
-    if (activeFilter === 'Pending') return matchesSearch && report.status === 'menunggu'
     return matchesSearch
   })
 
   const paginatedReports = filteredReports.slice((currentPage - 1) * pageSize, currentPage * pageSize)
   const totalPages = Math.max(1, Math.ceil(filteredReports.length / pageSize))
-
-  const handleStatusChange = async (id: number, newStatus: StatusPillValue) => {
-    if (!token) return
-
-    const previousReport = reports.find((item) => item.id === id)
-    if (!previousReport) return
-
-    setError(null)
-    setReports((current) => current.map((report) => (report.id === id ? { ...report, status: newStatus } : report)))
-
-    try {
-      await updateAdminReportStatus(token, id, toBackendStatus(newStatus))
-      await loadDashboard()
-    } catch (err: unknown) {
-      setReports((current) => current.map((report) => (report.id === id ? { ...report, status: previousReport.status } : report)))
-      setError(err instanceof Error ? err.message : 'Gagal memperbarui status laporan')
-    }
-  }
 
   function openDetail(id: number) {
     setSelectedSummary(reports.find((item) => item.id === id) ?? null)
@@ -339,10 +319,7 @@ export function RegulatorOverviewPage() {
               <td className="px-4 py-4 text-sm" style={{ color: tokens.colors.slate[600] }}>{report.reporter}</td>
               <td className="px-4 py-4 text-sm" style={{ color: tokens.colors.slate[600] }}>{report.date}</td>
               <td className="px-4 py-4 text-sm">
-                <StatusDropdown 
-                  status={report.status} 
-                  onChange={(newStatus) => handleStatusChange(report.id, newStatus)} 
-                />
+                <StatusPill status={report.status} />
               </td>
               <td className="px-4 py-4 text-sm font-medium" style={{ color: tokens.colors.slate[400] }}>
                 <div className="flex items-center gap-3">
@@ -456,7 +433,6 @@ export function RegulatorOverviewPage() {
                 className="w-full px-4 py-3 text-sm outline-none"
                 style={{ border: `1px solid ${tokens.colors.slate[200]}`, borderRadius: tokens.radius.sm }}
               >
-                <option value="menunggu">Menunggu</option>
                 <option value="diproses">Diproses</option>
                 <option value="selesai">Selesai</option>
                 <option value="ditolak">Ditolak</option>
@@ -501,17 +477,17 @@ export function RegulatorOverviewPage() {
 }
 
 function mapStatus(status: string): StatusPillValue {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'menunggu' || status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }
 
 function toBackendStatus(status: StatusPillValue): string {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }

@@ -160,15 +160,17 @@ export function LoginPage() {
             ) : null}
           </div>
 
-          <p className="text-sm text-slate-500">
-            Tidak punya akun user?{' '}
-            <button
-              className="text-blue-500 font-medium hover:underline"
-              onClick={() => navigate(paths.signup)}
-            >
-              Daftar
-            </button>
-          </p>
+          {!isAdminLogin ? (
+            <p className="text-sm text-slate-500">
+              Tidak punya akun user?{' '}
+              <button
+                className="text-blue-500 font-medium hover:underline"
+                onClick={() => navigate(paths.signup)}
+              >
+                Daftar
+              </button>
+            </p>
+          ) : null}
 
           {/* Divider */}
           <div className="w-full border-t border-slate-200" />

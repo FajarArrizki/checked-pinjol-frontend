@@ -8,8 +8,8 @@ type StatusDropdownProps = {
   options?: StatusPillValue[]
 }
 
-export function StatusDropdown({ status, onChange, options = ['menunggu', 'diproses', 'selesai', 'ditolak'] }: StatusDropdownProps) {
-  const currentConfig = statusPillConfig[status] || statusPillConfig['menunggu']
+export function StatusDropdown({ status, onChange, options = ['diproses', 'selesai', 'ditolak'] }: StatusDropdownProps) {
+  const currentConfig = statusPillConfig[status] || statusPillConfig.diproses
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value as StatusPillValue)

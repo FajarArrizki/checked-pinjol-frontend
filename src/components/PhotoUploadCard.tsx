@@ -18,7 +18,7 @@ export function PhotoUploadCard({ description, multiple = true, onFileChange }: 
     >
       <input
         type="file"
-        accept="image/*"
+        accept=".jpg,.jpeg,.png,.gif,.webp,.svg,image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
         multiple={multiple}
         className="sr-only"
         onChange={(event) => onFileChange?.(Array.from(event.target.files ?? []))}
@@ -53,6 +53,7 @@ export function PhotoUploadCard({ description, multiple = true, onFileChange }: 
           Klik untuk unggah screenshot
         </p>
         <p className="max-w-xs text-sm leading-6" style={{ color: tokens.colors.slate[500] }}>{description}</p>
+        <p className="max-w-xs text-xs" style={{ color: tokens.colors.slate[400] }}>Format gambar yang didukung: JPG, JPEG, PNG, GIF, WEBP, SVG.</p>
       </div>
     </label>
   )

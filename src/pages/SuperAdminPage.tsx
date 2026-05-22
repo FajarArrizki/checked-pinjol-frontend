@@ -10,8 +10,10 @@ import {
 } from '../components'
 import { tokens } from '../config/tokens'
 import { useAuth } from '../auth/AuthContext'
+import { emailRequirementText, isStrongPassword, isValidEmail, passwordRequirementText } from '../utils/validation'
 import {
   createManagedAdmin,
+  deleteManagedAdmin,
   getManagedAdmins,
   toggleManagedAdmin,
   type ManagedAdminItem,
@@ -29,6 +31,12 @@ type AdminRow = {
   lastUpdate: string
 }
 
+type AdminActionTarget = {
+  id: number
+  name: string
+  isActive: boolean
+}
+
 export function SuperAdminPage() {
   const { token } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -38,6 +46,9 @@ export function SuperAdminPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [togglingId, setTogglingId] = useState<number | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [toggleTarget, setToggleTarget] = useState<AdminActionTarget | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<AdminActionTarget | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [newName, setNewName] = useState('')
@@ -114,6 +125,16 @@ export function SuperAdminPage() {
       return
     }
 
+    if (!isValidEmail(newEmail.trim())) {
+      setError(emailRequirementText)
+      return
+    }
+
+    if (!isStrongPassword(newPassword)) {
+      setError(passwordRequirementText)
+      return
+    }
+
     setSaving(true)
     setError(null)
 
@@ -156,6 +177,23 @@ export function SuperAdminPage() {
       setError(err instanceof Error ? err.message : 'Gagal mengubah status admin')
     } finally {
       setTogglingId(null)
+    }
+  }
+
+  async function handleDeleteAdmin(id: number) {
+    if (!token) return
+
+    setDeletingId(id)
+    setError(null)
+
+    try {
+      await deleteManagedAdmin(token, id)
+      setAdmins((current) => current.filter((admin) => admin.id_admin !== id))
+      setMessage('Admin berhasil dihapus')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus admin')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -246,18 +284,81 @@ export function SuperAdminPage() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  disabled={togglingId === admin.id}
+                  disabled={togglingId === admin.id || deletingId === admin.id}
                   className="transition-colors disabled:opacity-50"
                   style={{ color: admin.isActive ? tokens.colors.warning.base : '#027A48' }}
-                  onClick={() => handleToggleAdmin(admin.id)}
+                  onClick={() => setToggleTarget({ id: admin.id, name: admin.nama, isActive: admin.isActive })}
                 >
                   {togglingId === admin.id ? 'Memproses...' : admin.isActive ? 'Pause' : 'Activate'}
+                </button>
+                <button
+                  type="button"
+                  disabled={deletingId === admin.id || togglingId === admin.id}
+                  className="transition-colors disabled:opacity-50"
+                  style={{ color: tokens.colors.danger.base }}
+                  onClick={() => setDeleteTarget({ id: admin.id, name: admin.nama, isActive: admin.isActive })}
+                >
+                  {deletingId === admin.id ? 'Menghapus...' : 'Hapus'}
                 </button>
               </div>
             </td>
           </tr>
         ))}
       </TableList>
+
+      <Modal
+        isOpen={toggleTarget !== null}
+        onClose={() => setToggleTarget(null)}
+        title={toggleTarget?.isActive ? 'Pause Admin' : 'Activate Admin'}
+        description={toggleTarget ? `Konfirmasi perubahan status untuk ${toggleTarget.name}.` : ''}
+      >
+        <div className="flex flex-col gap-5 mt-2">
+          <p className="text-sm text-slate-600">
+            {toggleTarget?.isActive
+              ? 'Admin ini akan dinonaktifkan sementara dan tidak bisa login sampai diaktifkan kembali.'
+              : 'Admin ini akan diaktifkan kembali dan bisa login seperti biasa.'}
+          </p>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="secondary" onClick={() => setToggleTarget(null)}>Batal</Button>
+            <Button
+              onClick={async () => {
+                if (!toggleTarget) return
+                await handleToggleAdmin(toggleTarget.id)
+                setToggleTarget(null)
+              }}
+              disabled={toggleTarget ? togglingId === toggleTarget.id : false}
+            >
+              {toggleTarget && togglingId === toggleTarget.id ? 'Memproses...' : toggleTarget?.isActive ? 'Pause' : 'Activate'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Hapus Admin"
+        description={deleteTarget ? `Konfirmasi penghapusan permanen untuk ${deleteTarget.name}.` : ''}
+      >
+        <div className="flex flex-col gap-5 mt-2">
+          <p className="text-sm text-slate-600">
+            Admin yang dihapus tidak bisa dipulihkan dari dashboard. Pastikan akun ini memang sudah tidak diperlukan.
+          </p>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Batal</Button>
+            <Button
+              onClick={async () => {
+                if (!deleteTarget) return
+                await handleDeleteAdmin(deleteTarget.id)
+                setDeleteTarget(null)
+              }}
+              disabled={deleteTarget ? deletingId === deleteTarget.id : false}
+            >
+              {deleteTarget && deletingId === deleteTarget.id ? 'Menghapus...' : 'Hapus'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={isModalOpen}
@@ -285,6 +386,7 @@ export function SuperAdminPage() {
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
           />
+          <p className="text-xs text-slate-400">{emailRequirementText}</p>
           <Input
             label="Password"
             type="password"
@@ -295,6 +397,7 @@ export function SuperAdminPage() {
               if (e.key === 'Enter') handleAddAdmin()
             }}
           />
+          <p className="text-xs text-slate-400">{passwordRequirementText}</p>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Batal</Button>
             <Button onClick={handleAddAdmin} disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</Button>

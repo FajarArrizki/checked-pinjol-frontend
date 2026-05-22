@@ -18,6 +18,7 @@ import { apiConfig } from '../config/api'
 import { paths } from '../router/paths'
 import { useAuth } from '../auth/AuthContext'
 import { useLogoutRedirect } from '../auth/useLogoutRedirect'
+import { emailRequirementText, isValidEmail, isValidPhoneNumber, normalizeDigits, phoneRequirementText } from '../utils/validation'
 
 type ReportFormErrors = {
   reporterName?: string
@@ -107,12 +108,14 @@ export function ReportApplicationPage() {
 
     if (!email.trim()) {
       nextErrors.email = 'Email wajib diisi.'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      nextErrors.email = 'Format email tidak valid.'
+    } else if (!isValidEmail(email.trim())) {
+      nextErrors.email = emailRequirementText
     }
 
     if (!contact.trim()) {
       nextErrors.contact = 'Kontak wajib diisi.'
+    } else if (!isValidPhoneNumber(normalizeDigits(contact))) {
+      nextErrors.contact = phoneRequirementText
     }
 
     if (!appLink.trim()) {
@@ -204,7 +207,7 @@ export function ReportApplicationPage() {
       form.append('judul_laporan', appName)
       form.append('isi_laporan', description)
       form.append('nama_pelapor', reporterName)
-      form.append('kontak_pelapor', contact)
+      form.append('kontak_pelapor', normalizeDigits(contact))
       form.append('email_pelapor', email)
       form.append('tautan_aplikasi', appLink)
       selectedRegulationIds.forEach((id) => form.append('regulasi_ids[]', String(id)))
@@ -281,9 +284,12 @@ export function ReportApplicationPage() {
             type="tel"
             placeholder="Masukkan nomor yang bisa dihubungi"
             value={contact}
-            onChange={(event) => setContact(event.target.value)}
+            inputMode="numeric"
+            maxLength={12}
+            onChange={(event) => setContact(normalizeDigits(event.target.value).slice(0, 12))}
             error={errors.contact}
           />
+          <p className="-mt-3 text-xs text-slate-400">{phoneRequirementText}</p>
 
           <Input
             label="Email"
@@ -293,6 +299,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setEmail(event.target.value)}
             error={errors.email}
           />
+          <p className="-mt-3 text-xs text-slate-400">{emailRequirementText}</p>
 
           <Input
             label="Tautan Aplikasi"

@@ -5,6 +5,7 @@ export type SavedSimulationItem = {
   id: string
   loanAmount: string
   tenor: string
+  tenorUnit: 'hari' | 'bulan'
   dailyInterest: string
   adminFee: string
   totalPayment: string
@@ -78,7 +79,7 @@ export function SavedSimulations({ simulations, onReload }: SavedSimulationsProp
 
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tenor</span>
-                  <span className="text-sm font-bold text-slate-900 whitespace-nowrap">{item.tenor} Hari</span>
+                  <span className="text-sm font-bold text-slate-900 whitespace-nowrap">{item.tenor} {item.tenorUnit}</span>
                 </div>
 
                 <div className="h-8 w-px bg-slate-100 hidden sm:block" />

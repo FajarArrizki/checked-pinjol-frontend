@@ -59,7 +59,7 @@ export function ReportStatusPage() {
           id: Number(item.id_laporan ?? item.id ?? 0),
           appName: item.judul_laporan ?? item.nama_pinjol ?? 'Laporan',
           description: item.isi_laporan ?? '',
-          status: normalizeStatus(String(item.status_laporan ?? 'menunggu')),
+          status: normalizeStatus(String(item.status_laporan ?? 'diproses')),
           date: item.tanggal_lapor ?? '',
           link: item.tautan_aplikasi ?? '',
           chronology: item.isi_laporan ?? '',
@@ -249,9 +249,9 @@ export function ReportStatusPage() {
 }
 
 function normalizeStatus(status: string): StatusPillValue {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'menunggu' || status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }

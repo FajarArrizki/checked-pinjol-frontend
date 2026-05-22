@@ -199,3 +199,9 @@ export async function toggleManagedAdmin(token: string, id: number): Promise<{ i
     headers: { 'Content-Type': 'application/json' },
   }, token)
 }
+
+export async function deleteManagedAdmin(token: string, id: number): Promise<void> {
+  await request<null>(`/api/admin/admins/${id}`, {
+    method: 'DELETE',
+  }, token)
+}

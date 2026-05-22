@@ -4,6 +4,7 @@ import { BrandIcon, AppNavbar, Input, Button } from '../components'
 import { paths } from '../router/paths'
 import { useAuth } from '../auth/AuthContext'
 import { isApiError } from '../auth/authApi'
+import { emailRequirementText, isStrongPassword, isValidEmail, isValidPhoneNumber, normalizeDigits, passwordRequirementText, phoneRequirementText } from '../utils/validation'
 
 export function SignUpPage() {
   const { register } = useAuth()
@@ -19,6 +20,23 @@ export function SignUpPage() {
   const handleSignUp = async () => {
     setError('')
 
+    const normalizedPhone = normalizeDigits(noHp)
+
+    if (!isValidEmail(email.trim())) {
+      setError(emailRequirementText)
+      return
+    }
+
+    if (!isValidPhoneNumber(normalizedPhone)) {
+      setError(phoneRequirementText)
+      return
+    }
+
+    if (!isStrongPassword(password)) {
+      setError(passwordRequirementText)
+      return
+    }
+
     if (password !== confirmPassword) {
       setError('Password tidak cocok.')
       return
@@ -30,7 +48,7 @@ export function SignUpPage() {
       await register({
         name,
         email,
-        noHp,
+        noHp: normalizedPhone,
         password,
       })
 
@@ -72,7 +90,7 @@ export function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <span className="text-xs text-slate-400">
-                We will never share your email.
+                {emailRequirementText}
               </span>
               </div>
 
@@ -82,8 +100,13 @@ export function SignUpPage() {
                 type="tel"
                 placeholder="08xxxxxxxxxx"
                 value={noHp}
-                onChange={(e) => setNoHp(e.target.value)}
+                inputMode="numeric"
+                maxLength={12}
+                onChange={(e) => setNoHp(normalizeDigits(e.target.value).slice(0, 12))}
               />
+              <span className="text-xs text-slate-400">
+                {phoneRequirementText}
+              </span>
             </div>
 
             <div className="flex flex-col gap-1">
@@ -95,7 +118,7 @@ export function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <span className="text-xs text-slate-400">
-                Make sure your password is secure.
+                {passwordRequirementText}
               </span>
             </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Input, Modal, SearchBar } from '../components'
+import { Button, Input, Modal, ReviewCommentsModal, ReviewStars, SearchBar } from '../components'
 import { tokens } from '../config/tokens'
 import { apiConfig } from '../config/api'
 import { useAuth } from '../auth/AuthContext'
@@ -11,6 +11,8 @@ type Pinjol = {
   alamat: string | null
   website: string | null
   status_pinjol: 'legal' | 'ilegal' | 'dalam_pengawasan'
+  rating_rata_rata?: number | string | null
+  total_ulasan?: number | string | null
   created_at?: string | null
   updated_at?: string | null
 }
@@ -51,6 +53,7 @@ export function RegulatorRegisteredLoansPage() {
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<Pinjol | null>(null)
+  const [reviewTarget, setReviewTarget] = useState<Pinjol | null>(null)
 
   const filteredList = useMemo(() => {
     return pinjolList.filter((item) =>
@@ -300,8 +303,35 @@ export function RegulatorRegisteredLoansPage() {
                 </div>
 
                 <div className="space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Rating Pengguna</p>
+                  <div className="pt-1 flex flex-wrap items-center gap-3">
+                    <ReviewStars rating={Number(pinjol.rating_rata_rata ?? 0)} />
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-white"
+                      style={{
+                        borderColor: tokens.colors.slate[200],
+                        backgroundColor: tokens.colors.white,
+                        color: tokens.colors.slate[700],
+                      }}
+                      onClick={() => setReviewTarget(pinjol)}
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75h6.75m-6.75 3h4.5m6.375-1.125c0 4.97-4.534 9-10.125 9a10.61 10.61 0 0 1-4.158-.844L3 21l1.364-3.409A8.964 8.964 0 0 1 2.25 11.625c0-4.97 4.534-9 10.125-9S22.5 6.655 22.5 11.625Z" />
+                      </svg>
+                      {Number(pinjol.total_ulasan ?? 0)} ulasan
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
                   <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Alamat</p>
                   <p className="font-medium text-slate-900">{pinjol.alamat ?? '-'}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Status Legalitas</p>
+                  <p className="font-medium capitalize text-slate-900">{pinjol.status_pinjol.replace('_', ' ')}</p>
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
@@ -344,6 +374,13 @@ export function RegulatorRegisteredLoansPage() {
           </div>
         </div>
       </Modal>
+
+      <ReviewCommentsModal
+        isOpen={reviewTarget !== null}
+        onClose={() => setReviewTarget(null)}
+        pinjolId={reviewTarget?.id_pinjol ?? null}
+        pinjolName={reviewTarget?.nama_pinjol ?? ''}
+      />
     </div>
   )
 }

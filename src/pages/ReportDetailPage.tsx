@@ -44,11 +44,6 @@ const supportingFaqItems = [
       'Jika ada perkembangan kasus atau bukti baru yang penting, simpan dokumentasinya terlebih dahulu. Bila diminta oleh admin atau diperlukan untuk kasus lanjutan, bukti tambahan tersebut dapat digunakan sebagai referensi tindak lanjut berikutnya.',
   },
   {
-    question: 'Apa yang harus saya lakukan jika laporan masih berstatus menunggu?',
-    answer:
-      'Status menunggu berarti laporan sudah diterima tetapi belum masuk tahap penanganan aktif. Pastikan data yang Anda kirim sudah jelas, lalu pantau halaman ini secara berkala untuk melihat perubahan status atau tanggapan admin.',
-  },
-  {
     question: 'Apakah saya bisa membuat laporan baru untuk kasus yang sama?',
     answer:
       'Sebaiknya gunakan laporan yang sudah ada sebagai referensi utama jika kasusnya masih sama. Buat laporan baru hanya jika ada kejadian berbeda, aplikasi berbeda, atau perkembangan baru yang memang perlu dicatat terpisah.',
@@ -56,11 +51,6 @@ const supportingFaqItems = [
 ]
 
 const statusGuidance: Record<StatusPillValue, { title: string; description: string }> = {
-  menunggu: {
-    title: 'Laporan Anda sudah masuk dan sedang menunggu peninjauan.',
-    description:
-      'Status menunggu berarti laporan telah tersimpan di sistem, tetapi belum masuk ke tahap penanganan aktif. Simpan kode laporan Anda dan pantau halaman ini secara berkala untuk melihat perubahan status atau balasan admin regulator.',
-  },
   diproses: {
     title: 'Laporan Anda sedang ditangani oleh admin regulator.',
     description:
@@ -77,9 +67,9 @@ const statusGuidance: Record<StatusPillValue, { title: string; description: stri
       'Status ditolak biasanya berarti laporan memerlukan data tambahan, bukti yang lebih kuat, atau tidak sesuai cakupan penanganan saat ini. Periksa kembali detail laporan Anda dan siapkan informasi pendukung bila diperlukan.',
   },
   pending: {
-    title: 'Laporan Anda sudah masuk dan sedang menunggu peninjauan.',
+    title: 'Laporan Anda sedang ditangani oleh admin regulator.',
     description:
-      'Status menunggu berarti laporan telah tersimpan di sistem, tetapi belum masuk ke tahap penanganan aktif. Simpan kode laporan Anda dan pantau halaman ini secara berkala untuk melihat perubahan status atau balasan admin regulator.',
+      'Status diproses berarti laporan sedang diperiksa bersama data dan bukti yang Anda kirim. Pada tahap ini, Anda hanya perlu memantau pembaruan status dan menunggu tanggapan resmi pada halaman detail laporan.',
   },
   process: {
     title: 'Laporan Anda sedang ditangani oleh admin regulator.',
@@ -172,7 +162,7 @@ export function ReportDetailPage() {
         setReport({
           appName: json.data.judul_laporan ?? json.data.nama_pinjol ?? 'Laporan',
           description: json.data.isi_laporan ?? '',
-          status: normalizeStatus(String(json.data.status_laporan ?? 'menunggu')),
+          status: normalizeStatus(String(json.data.status_laporan ?? 'diproses')),
           date: json.data.tanggal_lapor ?? '',
           link: json.data.tautan_aplikasi ?? '',
           chronology: json.data.isi_laporan ?? '',
@@ -187,7 +177,7 @@ export function ReportDetailPage() {
             ? {
                 name: 'Satgas Pasti (OJK)',
                 respondedAt: replyAt || '22 Februari 2026, 14:30 WIB',
-                message: replyMessage || 'Laporan telah ditinjau oleh regulator. Mohon menunggu tindak lanjut resmi sesuai hasil verifikasi data dan bukti yang tersedia.',
+                message: replyMessage || 'Laporan telah ditinjau oleh regulator. Mohon pantau tindak lanjut resmi sesuai hasil verifikasi data dan bukti yang tersedia.',
                 imageUrl: heroImage,
               }
             : undefined,
@@ -227,7 +217,7 @@ export function ReportDetailPage() {
     return null
   }
 
-  const guidance = statusGuidance[report.status] ?? statusGuidance.menunggu
+  const guidance = statusGuidance[report.status] ?? statusGuidance.diproses
 
   return (
     <div className="min-h-screen bg-white">
@@ -415,11 +405,11 @@ export function ReportDetailPage() {
 
               <div className="space-y-0 rounded-2xl bg-transparent">
                 <div className="px-0 py-0">
-                  <h3 className="text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>
+                  <h3 className="text-sm font-bold" style={{ color: tokens.colors.slate[900] }}>
                     FAQ Pendukung
                   </h3>
                   <p className="mt-1 text-xs leading-6" style={{ color: tokens.colors.slate[500] }}>
-                    Informasi tambahan ini bersifat tetap sebagai panduan singkat saat laporan Anda masih menunggu, sedang diproses, maupun sudah menerima tanggapan regulator.
+                    Informasi tambahan ini bersifat tetap sebagai panduan singkat saat laporan Anda sedang diproses maupun sudah menerima tanggapan regulator.
                   </p>
                 </div>
 
@@ -473,9 +463,9 @@ export function ReportDetailPage() {
 }
 
 function normalizeStatus(status: string): StatusPillValue {
-  if (status === 'menunggu' || status === 'pending') return 'menunggu'
+  if (status === 'menunggu' || status === 'pending') return 'diproses'
   if (status === 'diproses' || status === 'process') return 'diproses'
   if (status === 'selesai') return 'selesai'
   if (status === 'ditolak' || status === 'terminate') return 'ditolak'
-  return 'menunggu'
+  return 'diproses'
 }

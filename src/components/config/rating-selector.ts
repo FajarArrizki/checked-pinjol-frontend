@@ -2,6 +2,8 @@ import { tokens } from '../../config/tokens'
 
 export type RatingValue = 1 | 2 | 3 | 4 | 5
 
+export const ratingSelectorPlaceholder = 'Pilih rating terlebih dahulu'
+
 export const ratingSelectorLabels: Record<RatingValue, string> = {
   1: 'Sangat Buruk',
   2: 'Buruk',

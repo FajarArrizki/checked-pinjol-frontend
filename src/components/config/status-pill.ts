@@ -1,6 +1,6 @@
 import { tokens } from '../../config/tokens'
 
-export type StatusPillValue = 'menunggu' | 'diproses' | 'selesai' | 'ditolak' | 'process' | 'terminate' | 'pending'
+export type StatusPillValue = 'diproses' | 'selesai' | 'ditolak' | 'process' | 'terminate' | 'pending'
 
 export const statusPillConfig: Record<
   StatusPillValue,
@@ -9,36 +9,28 @@ export const statusPillConfig: Record<
     style: Record<string, string>
   }
 > = {
-  menunggu: {
-    label: 'Menunggu',
+  diproses: {
+    label: 'Diproses',
     style: {
       borderColor: tokens.colors.warning.base,
       backgroundColor: tokens.colors.warning.soft,
       color: tokens.colors.slate[700],
     },
   },
-  diproses: {
-    label: 'Diproses',
-    style: {
-      borderColor: tokens.colors.success.base,
-      backgroundColor: tokens.colors.success.soft,
-      color: tokens.colors.slate[600],
-    },
-  },
   process: {
     label: 'Diproses',
     style: {
-      borderColor: tokens.colors.success.base,
-      backgroundColor: tokens.colors.success.soft,
-      color: tokens.colors.slate[600],
+      borderColor: tokens.colors.warning.base,
+      backgroundColor: tokens.colors.warning.soft,
+      color: tokens.colors.slate[700],
     },
   },
   selesai: {
     label: 'Selesai',
     style: {
-      borderColor: tokens.colors.slate[500],
-      backgroundColor: tokens.colors.slate[200],
-      color: tokens.colors.slate[500],
+      borderColor: tokens.colors.success.base,
+      backgroundColor: tokens.colors.success.soft,
+      color: tokens.colors.brand.dark,
     },
   },
   ditolak: {
@@ -58,7 +50,7 @@ export const statusPillConfig: Record<
     },
   },
   pending: {
-    label: 'Menunggu',
+    label: 'Diproses',
     style: {
       borderColor: tokens.colors.warning.base,
       backgroundColor: tokens.colors.warning.soft,
