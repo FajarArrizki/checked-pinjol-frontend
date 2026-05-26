@@ -65,7 +65,7 @@ export function ProfileTrigger({ username, email, onLogout }: ProfileTriggerProp
 
       {open ? (
         <div
-          className="absolute right-0 mt-2 min-w-[220px] border bg-white p-2 shadow-sm"
+          className="absolute right-0 mt-2 min-w-[220px] z-50 border bg-white p-2 shadow-sm"
           style={{
             borderRadius: tokens.radius.md,
             borderColor: tokens.colors.slate[200],
