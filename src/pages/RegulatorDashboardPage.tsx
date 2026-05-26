@@ -23,7 +23,7 @@ export function RegulatorDashboardPage() {
       onClick: () => navigate(paths.regulatorRegisteredLoans),
     },
     ...(isSuperAdmin
-      ? [{ label: 'Manajemen User', active: location.pathname === paths.regulatorSuperAdmin, onClick: () => navigate(paths.regulatorSuperAdmin) }]
+      ? [{ label: 'Manajemen Admin', active: location.pathname === paths.regulatorSuperAdmin, onClick: () => navigate(paths.regulatorSuperAdmin) }]
       : []),
     { label: 'Manajemen Konten', active: location.pathname === paths.regulatorContent, onClick: () => navigate(paths.regulatorContent) },
     { label: 'Pengaturan', active: location.pathname === paths.regulatorSettings, onClick: () => navigate(paths.regulatorSettings) },

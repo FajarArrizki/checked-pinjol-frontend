@@ -24,7 +24,7 @@ const menuItems = [
     ),
   },
   {
-    title: 'Tulis Ulasan',
+    title: 'Tulis Ulasan Pinjol',
     description: 'Bagikan pengalaman kamu agar pengguna lain lebih waspada dan terbantu.',
     colorTheme: {
       bg: 'white',
@@ -96,9 +96,9 @@ const menuItems = [
       </svg>
     ),
   },
-]
-
-type ArticleItem = {
+ ]
+ 
+ type ArticleItem = {
   id: string
   title: string
   excerpt: string
@@ -107,9 +107,9 @@ type ArticleItem = {
   author?: string
   publishedAt?: string | null
   slug?: string
-}
-
-type ApiArticle = {
+ }
+ 
+ type ApiArticle = {
   id_artikel: number
   judul: string
   slug?: string
@@ -119,9 +119,9 @@ type ApiArticle = {
   gambar?: string | null
   published_at?: string | null
   created_at?: string | null
-}
-
-function toArticle(item: ApiArticle): ArticleItem {
+ }
+ 
+ function toArticle(item: ApiArticle): ArticleItem {
   return {
     id: String(item.id_artikel),
     title: item.judul,
@@ -132,16 +132,16 @@ function toArticle(item: ApiArticle): ArticleItem {
     publishedAt: item.published_at ?? item.created_at ?? null,
     slug: item.slug,
   }
-}
-
-export function HomePage() {
+ }
+ 
+ export function HomePage() {
   const navigate = useNavigate()
   const handleLogout = useLogoutRedirect()
   const [newsItems, setNewsItems] = useState<ArticleItem[]>([])
-
+ 
   useEffect(() => {
     const controller = new AbortController()
-
+ 
     fetch(`${apiConfig.baseUrl}/api/artikel?per_page=5`, { signal: controller.signal })
       .then((res) => res.json())
       .then((json) => {
@@ -149,24 +149,31 @@ export function HomePage() {
         setNewsItems(items.map((item: ApiArticle) => toArticle(item)))
       })
       .catch(() => setNewsItems([]))
-
+ 
     return () => controller.abort()
   }, [])
-
+ 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50/50">
       <AppNavbar onLogout={handleLogout} />
-
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8">
+ 
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-10">
+        
+        {/* SECTION 1: LAYANAN UTAMA */}
         <section>
-          <div className="mb-4 flex items-center justify-between gap-4">
+          {/* Ubah mb-4 ke mb-6 agar jarak antar teks lebih lega & minimalis */}
+          <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-slate-900">Layanan Utama</h2>
-              <p className="mt-1 text-sm text-slate-500">Mulai dari layanan yang kamu butuhkan, mulai dari cek legalitas, simulasi pinjaman, hingga pelaporan aplikasi.</p>
+              {/* AKSESIBILITAS: Judul seksi naik dari text-2xl ke text-3xl dengan font-bold */}
+              <h2 className="text-3xl font-bold text-slate-900">Layanan Utama</h2>
+              {/* AKSESIBILITAS: Deskripsi naik dari text-sm ke text-base, warna dipertajam ke text-slate-600, ditambah leading-relaxed */}
+              <p className="mt-2 text-base leading-relaxed text-slate-600">
+                Mulai dari layanan yang kamu butuhkan, mulai dari cek legalitas, simulasi pinjaman, hingga pelaporan aplikasi.
+              </p>
             </div>
           </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+ 
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {menuItems.map((item) => (
               <MenuCard
                 key={item.title}
@@ -176,7 +183,7 @@ export function HomePage() {
                 colorTheme={item.colorTheme}
                 onClick={() => {
                   if (item.title === 'Cek Legalitas Pinjol') navigate(paths.legalityCheck)
-                  else if (item.title === 'Tulis Ulasan') navigate(paths.review)
+                  else if (item.title === 'Tulis Ulasan Pinjol') navigate(paths.review)
                   else if (item.title === 'Pusat Edukasi & Bantuan') navigate(paths.education)
                   else if (item.title === 'Simulasi Pinjaman') navigate(paths.simulation)
                   else if (item.title === 'Laporkan Aplikasi') navigate(paths.reportApplication)
@@ -186,15 +193,20 @@ export function HomePage() {
             ))}
           </div>
         </section>
-
-        <section>
-          <div className="mb-4 flex items-center justify-between gap-4">
+ 
+        {/* SECTION 2: BERITA & EDUKASI TERBARU */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-slate-900">Berita & Edukasi Terbaru</h2>
-              <p className="mt-1 text-sm text-slate-500">Ikuti panduan, pembaruan, dan insight terbaru agar kamu lebih aman saat menggunakan layanan pinjaman online.</p>
+              {/* AKSESIBILITAS: Judul seksi naik dari text-2xl ke text-3xl dengan font-bold */}
+              <h2 className="text-3xl font-bold text-slate-900">Berita & Edukasi Terbaru</h2>
+              {/* AKSESIBILITAS: Deskripsi naik dari text-sm ke text-base, warna dipertajam ke text-slate-600, ditambah leading-relaxed */}
+              <p className="mt-2 text-base leading-relaxed text-slate-600">
+                Ikuti panduan, pembaruan, dan insight terbaru agar kamu lebih aman saat menggunakan layanan pinjaman online.
+              </p>
             </div>
           </div>
-
+ 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {newsItems.map((item) => (
               <ArticleCard
@@ -211,7 +223,8 @@ export function HomePage() {
             ))}
           </div>
         </section>
+ 
       </main>
     </div>
   )
-}
+ }

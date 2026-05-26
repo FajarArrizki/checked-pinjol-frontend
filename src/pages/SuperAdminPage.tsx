@@ -206,7 +206,7 @@ export function SuperAdminPage() {
         headerContent={
           <div className="flex flex-col gap-4">
             <h1 className="text-2xl font-semibold" style={{ color: tokens.colors.slate[700] }}>
-              Manajemen User
+              Manajemen Admin
             </h1>
 
             {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
@@ -378,6 +378,7 @@ export function SuperAdminPage() {
             placeholder="admin_nama"
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
+            autoComplete="off"
           />
           <Input
             label="Email"
@@ -385,6 +386,7 @@ export function SuperAdminPage() {
             placeholder="nama@regulator.go.id"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
+            autoComplete="off"
           />
           <p className="text-xs text-slate-400">{emailRequirementText}</p>
           <Input
@@ -396,6 +398,7 @@ export function SuperAdminPage() {
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleAddAdmin()
             }}
+            autoComplete="new-password"
           />
           <p className="text-xs text-slate-400">{passwordRequirementText}</p>
           <div className="flex justify-end gap-3 pt-2">
