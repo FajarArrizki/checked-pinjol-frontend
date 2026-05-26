@@ -169,7 +169,7 @@ export function ArticleDetailPage() {
         <PageHeaderCard
           back={<BackLink toLabel="Education" to={paths.education} />}
           title={article.title}
-          description={article.excerpt}
+          description=""
         />
 
         <img

@@ -32,7 +32,7 @@ type ApiArticle = {
   created_at?: string | null
 }
 
-const filterTabs = ['Semua', 'Tips & Panduan', 'Edukasi'] as const
+const filterTabs = ['Semua', 'Edukasi', 'Tips & Panduan'] as const
 
 function toArticle(item: ApiArticle): Article {
   return {

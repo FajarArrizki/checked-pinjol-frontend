@@ -83,8 +83,19 @@ export function ProfileTrigger({ username, email, onLogout }: ProfileTriggerProp
             type="button"
             onClick={() => {
               setOpen(false)
+
+              // 1. Deteksi path area Admin SEBELUM menghapus sesi
+              const currentPath = window.location.pathname
+              const isAdminArea = currentPath.startsWith('/regulator') || currentPath.startsWith('/admin')
+
+              // 2. Hapus Sesi
               localStorage.removeItem(AUTH_STORAGE_KEY)
               onLogout?.()
+
+              // 3. Paksa Redirect menggunakan window.location agar dijamin mem-bypass fallback manapun
+              if (isAdminArea) {
+                window.location.href = '/admin/login'
+              }
             }}
             className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm font-medium hover:bg-slate-50"
             style={{ color: tokens.colors.slate[900] }}

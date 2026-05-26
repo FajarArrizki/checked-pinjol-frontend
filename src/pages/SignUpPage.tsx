@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { BrandIcon, AppNavbar, Input, Button } from '../components'
 import { paths } from '../router/paths'
 import { useAuth } from '../auth/AuthContext'
@@ -8,6 +8,7 @@ import { emailRequirementText, isStrongPassword, isValidEmail, isValidPhoneNumbe
 
 export function SignUpPage() {
   const { register } = useAuth()
+  const location = useLocation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [noHp, setNoHp] = useState('')
@@ -16,6 +17,18 @@ export function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  // MENERIMA DATA DARI HALAMAN LOGIN (JIKA ADA)
+  useEffect(() => {
+    const state = location.state as { email?: string; password?: string } | null
+    if (state) {
+      if (state.email) setEmail(state.email)
+      if (state.password) {
+        setPassword(state.password)
+        setConfirmPassword(state.password) // Samakan konfirmasinya sekalian biar user nyaman
+      }
+    }
+  }, [location.state])
 
   const handleSignUp = async () => {
     setError('')
@@ -52,6 +65,7 @@ export function SignUpPage() {
         password,
       })
 
+      // Berhasil daftar -> lempar email ke login page
       navigate(paths.login, { state: { email } })
     } catch (err) {
       setError(isApiError(err) ? err.message : 'Pendaftaran gagal')
@@ -75,9 +89,10 @@ export function SignUpPage() {
               <Input
                 label="Nama Lengkap"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="Masukkan nama lengkap Anda"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
               />
             </div>
 
@@ -85,14 +100,15 @@ export function SignUpPage() {
               <Input
                 label="Email"
                 type="email"
-                placeholder="Enter your email address"
+                placeholder="Masukkan alamat email Anda"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
               <span className="text-xs text-slate-400">
                 {emailRequirementText}
               </span>
-              </div>
+            </div>
 
             <div className="flex flex-col gap-1">
               <Input
@@ -103,6 +119,7 @@ export function SignUpPage() {
                 inputMode="numeric"
                 maxLength={12}
                 onChange={(e) => setNoHp(normalizeDigits(e.target.value).slice(0, 12))}
+                autoComplete="tel"
               />
               <span className="text-xs text-slate-400">
                 {phoneRequirementText}
@@ -113,9 +130,10 @@ export function SignUpPage() {
               <Input
                 label="Password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Masukkan password Anda"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
               />
               <span className="text-xs text-slate-400">
                 {passwordRequirementText}
@@ -126,9 +144,10 @@ export function SignUpPage() {
               <Input
                 label="Konfirmasi Password"
                 type="password"
-                placeholder="Re-enter your password"
+                placeholder="Masukkan kembali password Anda"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
               />
               {confirmPassword && password !== confirmPassword && (
                 <span className="text-xs text-red-500">
@@ -153,19 +172,17 @@ export function SignUpPage() {
             </Button>
           </div>
 
-          {/* Login link */}
-          <p className="text-sm text-slate-500">
-            Already have an account?{' '}
+          {/* Login link (ditambah mb-8 sebagai pengganti margin divider yang dihapus) */}
+          <p className="text-sm text-slate-500 mb-8">
+            Sudah punya akun?{' '}
             <button
               className="text-blue-500 font-medium hover:underline"
-              onClick={() => navigate(paths.login)}
+              // LEMPAR BALIK DATA EMAIL & PASSWORD KE LOGIN JIKA BATAL DAFTAR
+              onClick={() => navigate(paths.login, { state: { email, password } })}
             >
-              Log In
+              Masuk
             </button>
           </p>
-
-          {/* Divider */}
-          <div className="w-full border-t border-slate-200 mb-8" />
 
         </div>
       </main>

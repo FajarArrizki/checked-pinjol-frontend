@@ -77,7 +77,7 @@ export function ReviewPage() {
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" to={paths.home} />}
-          title="Tulis Ulasan"
+          title="Tulis Ulasan Pinjol"
           description="Bantu lindungi masyarakat dari pinjol illegal"
         />
 

@@ -32,7 +32,7 @@ export function BrandIcon({ variant = 'navbar' }: BrandIconProps) {
             />
           </svg>
         </span>
-        {/* Teks */}
+        {/* Teks Logo Utama */}
         <span
           className="text-3xl font-bold"
           style={{ color: tokens.colors.slate[900] }}
@@ -46,10 +46,11 @@ export function BrandIcon({ variant = 'navbar' }: BrandIconProps) {
   // variant === 'navbar' (default)
   return (
     <div className="inline-flex items-center gap-3">
+      {/* Kotak Icon Navbar: Dibuat sedikit lebih tegas dengan ukuran h-12 w-12 */}
       <span
-        className="flex h-11 w-11 items-center justify-center border text-[#1AA86E]"
+        className="flex h-12 w-12 items-center justify-center border"
         style={{
-          borderRadius: tokens.radius.sm,
+          borderRadius: tokens.radius.md, // Mengubah radius dari sm ke md agar sudut kotak terlihat lebih halus & modern
           borderColor: tokens.colors.brand.primary,
           backgroundColor: tokens.colors.brand.soft,
           color: tokens.colors.brand.primary,
@@ -60,7 +61,7 @@ export function BrandIcon({ variant = 'navbar' }: BrandIconProps) {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.2"
+          strokeWidth="2.4" // Ketebalan garis ikon dinaikkan sedikit dari 2.2 ke 2.4 agar bentuk perisai lebih solid
           className="h-6 w-6"
         >
           <path
@@ -71,7 +72,17 @@ export function BrandIcon({ variant = 'navbar' }: BrandIconProps) {
         </svg>
       </span>
 
-      <span style={{ color: tokens.colors.black }} className="text-base font-semibold">CheckedPinjol</span>
+      {/* AKSESIBILITAS TEKS NAVBAR: 
+          - Mengubah text-base (16px) menjadi text-xl (20px)
+          - Mengubah font-semibold menjadi font-bold
+          - Mengubah penanda warna ke Slate 900 demi kontras gelap yang konsisten dengan elemen teks utama lainnya
+      */}
+      <span 
+        className="text-xl font-bold tracking-tight"
+        style={{ color: tokens.colors.slate[900] }}
+      >
+        CekPinjol
+      </span>
     </div>
   )
 }

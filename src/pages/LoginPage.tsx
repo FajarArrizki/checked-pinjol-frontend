@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { BrandIcon, AppNavbar } from '../components'
-import { Input } from '../components'
-import { Button } from '../components'
+import { BrandIcon, AppNavbar, Input, Button } from '../components'
 import { paths } from '../router/paths'
 import { getRoleHomePath, useAuth } from '../auth/AuthContext'
 import { isApiError, verifyAdminTwoFactor, type PendingAdminTwoFactor } from '../auth/authApi'
@@ -19,12 +17,14 @@ export function LoginPage() {
   const navigate = useNavigate()
   const isAdminLogin = location.pathname === paths.adminLogin
 
+  // Menerima data dari halaman SignUp (HANYA jika dioper secara sengaja)
   useEffect(() => {
-    const state = location.state as { email?: string } | null
-    if (state?.email) {
-      setIdentifier(state.email)
+    const state = location.state as { email?: string; password?: string } | null
+    if (!isAdminLogin && state) {
+      if (state.email) setIdentifier(state.email)
+      if (state.password) setPassword(state.password)
     }
-  }, [location.state])
+  }, [location.state, isAdminLogin])
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -38,7 +38,6 @@ export function LoginPage() {
 
     try {
       const session = await login({ identifier, password }, isAdminLogin ? 'admin' : 'user')
-
       navigate(getRoleHomePath(session.user.role), { replace: true })
     } catch (err) {
       if (isApiError(err) && err.status === 409) {
@@ -89,10 +88,12 @@ export function LoginPage() {
             <div className="flex flex-col gap-1">
               <Input
                 label={isAdminLogin ? 'Username atau Email Admin' : 'Email User'}
-                type="text"
+                type={isAdminLogin ? 'text' : 'email'}
                 placeholder={isAdminLogin ? 'Masukkan username atau email admin' : 'Masukkan email user'}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
+                // DIUBAH KE OFF: Mematikan autofill bawaan browser untuk email/username
+                autoComplete="off" 
               />
               <span className="text-xs text-slate-400">
                 {isAdminLogin
@@ -109,6 +110,8 @@ export function LoginPage() {
                   placeholder="Masukkan password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  // DIUBAH KE NEW-PASSWORD: Trik paling ampuh agar browser tidak otomatis memasukkan password yang tersimpan
+                  autoComplete="new-password" 
                 />
                 <span className="text-xs text-slate-400">
                   Gunakan akun yang sudah di-seed atau terdaftar di backend.
@@ -122,6 +125,7 @@ export function LoginPage() {
                   placeholder="Masukkan 6 digit OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  autoComplete="off"
                 />
                 <span className="text-xs text-slate-400">
                   OTP diperlukan karena 2FA aktif untuk akun admin ini.
@@ -160,20 +164,22 @@ export function LoginPage() {
             ) : null}
           </div>
 
-          {!isAdminLogin ? (
-            <p className="text-sm text-slate-500">
-              Tidak punya akun user?{' '}
-              <button
-                className="text-blue-500 font-medium hover:underline"
-                onClick={() => navigate(paths.signup)}
-              >
-                Daftar
-              </button>
-            </p>
-          ) : null}
-
-          {/* Divider */}
-          <div className="w-full border-t border-slate-200" />
+          {/* Bagian Bawah Form */}
+          {!isAdminLogin && (
+            <>
+              <p className="text-sm text-slate-500">
+                Tidak punya akun user?{' '}
+                <button
+                  className="text-blue-500 font-medium hover:underline"
+                  onClick={() => navigate(paths.signup, { state: { email: identifier, password } })}
+                >
+                  Daftar
+                </button>
+              </p>
+              
+              <div className="w-full border-t border-slate-200" />
+            </>
+          )}
 
         </div>
       </main>
