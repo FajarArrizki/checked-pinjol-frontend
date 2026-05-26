@@ -122,7 +122,8 @@ export function ReportApplicationPage() {
       nextErrors.appLink = 'Tautan aplikasi wajib diisi.'
     } else {
       try {
-        new URL(appLink.trim())
+        const urlString = appLink.trim()
+        new URL(urlString.startsWith('http://') || urlString.startsWith('https://') ? urlString : `https://${urlString}`)
       } catch {
         nextErrors.appLink = 'Format tautan aplikasi tidak valid.'
       }
@@ -209,7 +210,12 @@ export function ReportApplicationPage() {
       form.append('nama_pelapor', reporterName)
       form.append('kontak_pelapor', normalizeDigits(contact))
       form.append('email_pelapor', email)
-      form.append('tautan_aplikasi', appLink)
+      
+      let finalAppLink = appLink.trim()
+      if (finalAppLink && !finalAppLink.startsWith('http://') && !finalAppLink.startsWith('https://')) {
+        finalAppLink = `https://${finalAppLink}`
+      }
+      form.append('tautan_aplikasi', finalAppLink)
       selectedRegulationIds.forEach((id) => form.append('regulasi_ids[]', String(id)))
       evidenceFiles.forEach((file) => {
         form.append('foto_bukti[]', file)
