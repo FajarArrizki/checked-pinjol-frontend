@@ -157,7 +157,7 @@ const menuItems = [
     <div className="min-h-screen bg-slate-50/50">
       <AppNavbar onLogout={handleLogout} />
  
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-10">
+      <main className="flex w-full flex-col gap-12 px-8 py-10">
         
         {/* SECTION 1: LAYANAN UTAMA */}
         <section>
