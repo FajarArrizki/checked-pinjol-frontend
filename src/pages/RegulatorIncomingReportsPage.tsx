@@ -175,8 +175,8 @@ export function RegulatorIncomingReportsPage() {
 
   const filterLabels: Record<string, string> = {
     Semua: 'Semua',
-    Diproses: 'Diproses',
-    Selesai: 'Selesai',
+    Diproses: `Diproses (${meta.status_counts?.diproses ?? 0})`,
+    Selesai: `Selesai (${meta.status_counts?.selesai ?? 0})`,
   }
 
   const totalPages = meta.total_pages

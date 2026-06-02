@@ -14,6 +14,7 @@ export function LoginPage() {
   const [twoFactorState, setTwoFactorState] = useState<PendingAdminTwoFactor | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<{ identifier?: string; password?: string }>({})
   const navigate = useNavigate()
   const isAdminLogin = location.pathname === paths.adminLogin
 
@@ -34,6 +35,23 @@ export function LoginPage() {
 
   const handleLogin = async () => {
     setError('')
+    setFieldErrors({})
+
+    const nextFieldErrors: typeof fieldErrors = {}
+
+    if (!identifier.trim()) {
+      nextFieldErrors.identifier = isAdminLogin ? 'Username atau email wajib diisi.' : 'Email wajib diisi.'
+    }
+
+    if (!password.trim()) {
+      nextFieldErrors.password = 'Password wajib diisi.'
+    }
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors)
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -49,7 +67,17 @@ export function LoginPage() {
           setError(err.message)
         }
       } else {
-        setError(isApiError(err) ? err.message : 'Login gagal')
+        const message = isApiError(err) ? err.message : 'Login gagal'
+        const lower = message.toLowerCase()
+        if (lower.includes('password') && lower.includes('email')) {
+          setFieldErrors({ identifier: message, password: message })
+        } else if (lower.includes('password') && lower.includes('username')) {
+          setFieldErrors({ identifier: message, password: message })
+        } else if (lower.includes('password')) {
+          setFieldErrors({ password: message })
+        } else {
+          setError(message)
+        }
       }
     } finally {
       setLoading(false)
@@ -57,9 +85,16 @@ export function LoginPage() {
   }
 
   const handleVerifyOtp = async () => {
-    if (!twoFactorState || !otp.trim()) return
+    if (!twoFactorState) return
 
     setError('')
+    setFieldErrors({})
+
+    if (!otp.trim()) {
+      setFieldErrors({ password: 'OTP wajib diisi.' })
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -91,45 +126,46 @@ export function LoginPage() {
                 type={isAdminLogin ? 'text' : 'email'}
                 placeholder={isAdminLogin ? 'Masukkan username atau email admin' : 'Masukkan email user'}
                 value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                // DIUBAH KE OFF: Mematikan autofill bawaan browser untuk email/username
-                autoComplete="off" 
+                onChange={(e) => { setIdentifier(e.target.value); setFieldErrors((c) => ({ ...c, identifier: undefined })) }}
+                autoComplete="off"
+                error={fieldErrors.identifier}
               />
-              <span className="text-xs text-slate-400">
+              {!fieldErrors.identifier ? <span className="text-xs text-slate-400">
                 {isAdminLogin
                   ? 'Admin dan superadmin bisa masuk dengan username atau email.'
                   : 'User masuk dengan email.'}
-              </span>
+              </span> : null}
             </div>
 
             {!twoFactorState ? (
               <div className="flex flex-col gap-1">
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="Masukkan password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  // DIUBAH KE NEW-PASSWORD: Trik paling ampuh agar browser tidak otomatis memasukkan password yang tersimpan
-                  autoComplete="new-password" 
-                />
-                <span className="text-xs text-slate-400">
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Masukkan password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setFieldErrors((c) => ({ ...c, password: undefined })) }}
+                autoComplete="new-password"
+                error={fieldErrors.password}
+              />
+              {!fieldErrors.password ? <span className="text-xs text-slate-400">
                   Gunakan akun yang sudah di-seed atau terdaftar di backend.
-                </span>
+                </span> : null}
               </div>
             ) : (
               <div className="flex flex-col gap-1">
-                <Input
-                  label="OTP Google Authenticator"
-                  type="text"
-                  placeholder="Masukkan 6 digit OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  autoComplete="off"
-                />
-                <span className="text-xs text-slate-400">
+              <Input
+                label="OTP Google Authenticator"
+                type="text"
+                placeholder="Masukkan 6 digit OTP"
+                value={otp}
+                onChange={(e) => { setOtp(e.target.value); setFieldErrors((c) => ({ ...c, password: undefined })) }}
+                autoComplete="off"
+                error={fieldErrors.password}
+              />
+              {!fieldErrors.password ? <span className="text-xs text-slate-400">
                   OTP diperlukan karena 2FA aktif untuk akun admin ini.
-                </span>
+                </span> : null}
               </div>
             )}
 

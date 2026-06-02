@@ -116,6 +116,11 @@ export type PaginatedReportsResponse = {
     per_page: number
     total: number
     total_pages: number
+    status_counts?: {
+      diproses: number
+      selesai: number
+      ditolak: number
+    }
   }
 }
 

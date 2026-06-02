@@ -173,6 +173,14 @@ export function ArticleDetailPage() {
           description=""
         />
 
+        <div className="flex flex-wrap items-center gap-4 text-sm" style={{ color: tokens.colors.slate[500] }}>
+          <span className="rounded-full px-3.5 py-1.5 font-medium" style={{ background: tokens.colors.brand.soft, color: tokens.colors.slate[900] }}>
+            {article.category}
+          </span>
+          {article.author && <span>Oleh {article.author}</span>}
+          {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString('id-ID')}</span>}
+        </div>
+
         {/* 1. Menaikkan batas tinggi gambar hero sedikit agar lebih megah */}
         <img
           src={article.imageUrl}
@@ -197,9 +205,9 @@ export function ArticleDetailPage() {
             {/* 3. Menaikkan font ringkasan ke text-base */}
             <div className="flex flex-col gap-3">
               <h2 className="text-xl font-bold" style={{ color: tokens.colors.slate[900] }}>Ringkasan</h2>
-              <p className="max-w-[100ch] break-words text-base leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
-                {article.excerpt}
-              </p>
+              <div className="max-w-[100ch] break-words text-sm leading-relaxed prose prose-p:mb-3 prose-ul:mb-3 prose-ol:mb-3" style={{ color: tokens.colors.slate[600] }}
+                dangerouslySetInnerHTML={{ __html: article.excerpt }}
+              />
             </div>
 
             {/* 4. Menaikkan isi artikel utama ke text-base (sebelumnya text-sm terlalu kecil untuk bacaan panjang) */}

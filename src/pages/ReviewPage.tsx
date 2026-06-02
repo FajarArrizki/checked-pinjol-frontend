@@ -19,6 +19,7 @@ export function ReviewPage() {
   const [pinjolOptions, setPinjolOptions] = useState<PinjolOption[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<{ rating?: string; comment?: string }>({})
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   useEffect(() => {
@@ -36,14 +37,21 @@ export function ReviewPage() {
   }, [])
 
   async function handleSubmit() {
-    setLoading(true)
     setError('')
+    setFieldErrors({})
+
+    const next: typeof fieldErrors = {}
+    if (rating === null) next.rating = 'Silakan pilih rating terlebih dahulu'
+    if (!comment.trim()) next.comment = 'Komentar wajib diisi.'
+
+    if (Object.keys(next).length > 0) {
+      setFieldErrors(next)
+      return
+    }
+
+    setLoading(true)
 
     try {
-      if (rating === null) {
-        throw new Error('Silakan pilih rating terlebih dahulu')
-      }
-
       const response = await fetch(`${apiConfig.baseUrl}/api/ulasan`, {
         method: 'POST',
         headers: {
@@ -93,7 +101,8 @@ export function ReviewPage() {
             <label className="text-sm font-semibold" style={{ color: tokens.colors.slate[900] }}>
               Berikan Rating
             </label>
-            <RatingSelector onChange={setRating} />
+            {fieldErrors.rating && <p className="text-xs" style={{ color: '#dc2626' }}>{fieldErrors.rating}</p>}
+            <RatingSelector onChange={(v) => { setRating(v); setFieldErrors((c) => ({ ...c, rating: undefined })) }} />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -120,7 +129,7 @@ export function ReviewPage() {
             </label>
             <textarea
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => { setComment(e.target.value); setFieldErrors((c) => ({ ...c, comment: undefined })) }}
               placeholder="Bagikan pengalaman anda dengan aplikasi ini..."
               rows={5}
               className="w-full resize-none px-4 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
@@ -128,8 +137,10 @@ export function ReviewPage() {
                 borderRadius: tokens.radius.md,
                 border: `1px solid ${tokens.colors.slate[200]}`,
                 color: tokens.colors.slate[900],
+                ...(fieldErrors.comment ? { borderColor: '#dc2626' } : {}),
               }}
             />
+            {fieldErrors.comment && <span className="text-xs" style={{ color: '#dc2626' }}>{fieldErrors.comment}</span>}
           </div>
 
           <div className="rounded-xl px-4 py-3 text-sm" style={{ backgroundColor: '#EEF2FF' }}>

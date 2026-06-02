@@ -1,6 +1,14 @@
 import { articleCardConfig } from './config/article-card'
 import { tokens } from '../config/tokens'
 
+function normalizeExcerpt(text: string): string {
+  if (!text) return ''
+  return text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/<[^>]+>/g, '')
+    .trim()
+}
+
 type ArticleCardProps = {
   id?: string
   title: string
@@ -54,27 +62,29 @@ export function ArticleCard({
         </div>
       )}
       <div className="flex flex-col gap-3">
-        <span
-          className="inline-flex self-start px-3 py-1 text-[13px] font-bold border"
-          style={{
-            borderRadius: tokens.radius.full,
-            backgroundColor: tokens.colors.brand.soft,
-            borderColor: '#A7F3D0',
-            color: tokens.colors.slate[900],
-          }}
-        >
-          {category}
-        </span>
         <h3 className="text-lg font-bold leading-snug line-clamp-2" style={{ color: tokens.colors.slate[900] }}>
           {title}
         </h3>
-        {(author || publishedAt) && (
-          <p className="text-xs" style={{ color: tokens.colors.slate[500] }}>
-            {author ? `Oleh ${author}` : ''}{author && publishedAt ? ' • ' : ''}{publishedAt ? new Date(publishedAt).toLocaleDateString('id-ID') : ''}
-          </p>
-        )}
+        <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: tokens.colors.slate[500] }}>
+          <span
+            className="inline-flex self-start px-3 py-1 text-[13px] font-bold border"
+            style={{
+              borderRadius: tokens.radius.full,
+              backgroundColor: tokens.colors.brand.soft,
+              borderColor: '#A7F3D0',
+              color: tokens.colors.slate[900],
+            }}
+          >
+            {category}
+          </span>
+          {(author || publishedAt) && (
+            <span>
+              {author ? `Oleh ${author}` : ''}{author && publishedAt ? ' • ' : ''}{publishedAt ? new Date(publishedAt).toLocaleDateString('id-ID') : ''}
+            </span>
+          )}
+        </div>
         <p className="text-sm leading-relaxed line-clamp-2" style={{ color: tokens.colors.slate[500] }}>
-          {excerpt}
+          {normalizeExcerpt(excerpt)}
         </p>
         <button
           onClick={onClick}

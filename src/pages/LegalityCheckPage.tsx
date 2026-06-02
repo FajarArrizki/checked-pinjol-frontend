@@ -82,6 +82,7 @@ export function LegalityCheckPage() {
             value={appName}
             onChange={(e) => setAppName(e.target.value)}
           />
+          <p className="-mt-3 text-xs text-slate-400">Masukkan nama lengkap aplikasi pinjol yang ingin dicek legalitasnya.</p>
           {result && (
             <LegalityResultCard
               name={result.kata_kunci}

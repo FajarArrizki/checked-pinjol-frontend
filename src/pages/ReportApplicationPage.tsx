@@ -354,7 +354,7 @@ export function ReportApplicationPage() {
                 <Badge
                   key={item.id_regulasi}
                   onClick={() => toggleRegulation(item.id_regulasi)}
-                  className={selectedRegulationIds.includes(item.id_regulasi) ? 'bg-[#E1F5EE] text-slate-900 border-[#A7F3D0]' : ''}
+                  selected={selectedRegulationIds.includes(item.id_regulasi)}
                 >
                   {item.nama_kriteria}
                 </Badge>
