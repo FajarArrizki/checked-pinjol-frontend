@@ -275,6 +275,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setReporterName(event.target.value)}
             error={errors.reporterName}
           />
+          <p className="-mt-3 text-xs text-slate-400">Nama pelapor wajib diisi.</p>
 
           <Input
             label="Nama Aplikasi"
@@ -284,6 +285,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setAppName(event.target.value)}
             error={errors.appName}
           />
+          <p className="-mt-3 text-xs text-slate-400">Nama aplikasi minimal 5 karakter.</p>
 
           <Input
             label="No HP / Kontak"
@@ -315,6 +317,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setAppLink(event.target.value)}
             error={errors.appLink}
           />
+          <p className="-mt-3 text-xs text-slate-400">Tautan wajib diisi dengan URL yang valid.</p>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
