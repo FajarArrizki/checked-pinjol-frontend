@@ -51,7 +51,6 @@ export type AdminDashboardResponse = {
   }
   total_laporan: {
     semua: number
-    menunggu: number
     diproses: number
     selesai: number
     ditolak: number
