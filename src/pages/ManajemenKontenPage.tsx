@@ -70,9 +70,6 @@ const STATUS_OPTIONS: Array<{ value: ArticleStatus; label: string }> = [
   { value: 'archived', label: 'Archived' },
 ]
 
-const articleEditorStyle = {
-  minHeight: '260px',
-}
 
 
 
@@ -217,6 +214,10 @@ const openEdit = (article: Article) => {
     return buildArticleImageUrl(path) ?? null
   }
 
+  function stripEmptyQuillHtml(html: string): string {
+    return html.replace(/^((<p><br\s*\/?><\/p>)|(<p><\/p>)){1,}/gi, '').replace(/((<p><br\s*\/?><\/p>)|(<p><\/p>)){1,}$/gi, '').trim() || '<p></p>'
+  }
+
   const saveArticle = async () => {
     if (!token) return
 
@@ -228,8 +229,8 @@ const openEdit = (article: Article) => {
       formData.append('judul', form.judul)
       formData.append('kategori', form.kategori)
       formData.append('author', form.author)
-      formData.append('summary', form.summary)
-      formData.append('isi_artikel', form.isi_artikel)
+      formData.append('summary', stripEmptyQuillHtml(form.summary))
+      formData.append('isi_artikel', stripEmptyQuillHtml(form.isi_artikel))
       formData.append('status', form.status)
 
       if (imageFile.file) {
@@ -376,13 +377,13 @@ const openEdit = (article: Article) => {
               {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </div>
-          <div className="flex flex-col gap-1.5 quill-container">
+          <div className="flex flex-col gap-1">
             <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Ringkasan</label>
-            <ReactQuill theme="snow" value={form.summary} onChange={(val) => setForm((curr) => ({ ...curr, summary: val }))} modules={quillModules} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50" style={{ minHeight: '140px' }} />
+            <ReactQuill theme="snow" value={form.summary} onChange={(val) => setForm((curr) => ({ ...curr, summary: val }))} modules={quillModules} className="[&_.ql-editor]:min-h-[140px]" />
           </div>
-          <div className="flex flex-col gap-1.5 quill-container">
-            <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Konten Artikel</label>
-            <ReactQuill theme="snow" value={form.isi_artikel} onChange={(val) => setForm((curr) => ({ ...curr, isi_artikel: val }))} modules={quillModules} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50" style={articleEditorStyle} />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium" style={{ color: tokens.colors.slate[700] }}>Konten Artikel</label>
+            <ReactQuill theme="snow" value={form.isi_artikel} onChange={(val) => setForm((curr) => ({ ...curr, isi_artikel: val }))} modules={quillModules} className="[&_.ql-editor]:min-h-[260px]" />
           </div>
 
           {error ? <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
@@ -390,8 +391,8 @@ const openEdit = (article: Article) => {
           <Button onClick={saveArticle} disabled={saving} className="w-full py-3 font-semibold">{saving ? 'Menyimpan...' : mode === 'create' ? 'Publikasikan Artikel' : 'Simpan Perubahan'}</Button>
         </div>
       </div>
-    )
-  }
+  )
+}
 
   return (
     <div className="flex h-full w-full flex-row overflow-hidden relative">
@@ -568,14 +569,13 @@ const openEdit = (article: Article) => {
                 </select>
               </div>
 
-              <div className="flex flex-col gap-1.5 quill-container">
-                <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Ringkasan</label>
-                <ReactQuill theme="snow" value={form.summary} onChange={(val) => setForm((curr) => ({ ...curr, summary: val }))} modules={quillModules} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50" style={{ minHeight: '140px' }} />
-              </div>
-
-              <div className="flex flex-col gap-1.5 quill-container">
-                <label className="text-sm font-medium" style={{ color: tokens.colors.slate[700] }}>Konten Artikel</label>
-                <ReactQuill theme="snow" value={form.isi_artikel} onChange={(val) => setForm((curr) => ({ ...curr, isi_artikel: val }))} modules={quillModules} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50" style={articleEditorStyle} />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Ringkasan</label>
+            <ReactQuill theme="snow" value={form.summary} onChange={(val) => setForm((curr) => ({ ...curr, summary: val }))} modules={quillModules} className="[&_.ql-editor]:min-h-[140px]" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Konten Artikel</label>
+            <ReactQuill theme="snow" value={form.isi_artikel} onChange={(val) => setForm((curr) => ({ ...curr, isi_artikel: val }))} modules={quillModules} className="[&_.ql-editor]:min-h-[260px]" />
               </div>
             </div>
 
@@ -586,7 +586,7 @@ const openEdit = (article: Article) => {
           </>
         )}
       </div>
-
     </div>
   )
 }
+
