@@ -375,7 +375,9 @@ export function ManajemenKontenPage() {
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Ringkasan</label>
-            <textarea value={form.summary} onChange={(e) => setForm((curr) => ({ ...curr, summary: e.target.value }))} className="w-full rounded-xl border px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#1AA86E]" style={{ borderColor: tokens.colors.slate[200], ...summaryStyle }} placeholder="Berikan ringkasan singkat isi artikel..." />
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+              <textarea value={form.summary} onChange={(e) => setForm((curr) => ({ ...curr, summary: e.target.value }))} className="w-full px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#1AA86E]" style={summaryStyle} placeholder="Berikan ringkasan singkat isi artikel..." />
+            </div>
           </div>
           <div className="flex flex-col gap-1.5 quill-container">
             <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>Konten Artikel</label>
