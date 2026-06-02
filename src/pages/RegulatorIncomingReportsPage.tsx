@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 
@@ -171,17 +171,12 @@ export function RegulatorIncomingReportsPage() {
     }
   }, [token, selectedReportId])
 
-  const filterCounts = useMemo(() => ({
-    diproses: activeFilter === 'Diproses' ? reports.length : meta.total,
-    selesai: activeFilter === 'Selesai' ? reports.length : meta.total,
-  }), [reports.length, activeFilter, meta.total])
-
   const filterKeys = ['Semua', 'Diproses', 'Selesai'] as const
 
   const filterLabels: Record<string, string> = {
     Semua: 'Semua',
-    Diproses: `Diproses (${filterCounts.diproses})`,
-    Selesai: `Selesai (${filterCounts.selesai})`,
+    Diproses: 'Diproses',
+    Selesai: 'Selesai',
   }
 
   const totalPages = meta.total_pages

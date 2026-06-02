@@ -179,7 +179,12 @@ export function ManajemenKontenPage() {
     setSuccess('')
   }
 
-  const openEdit = (article: Article) => {
+function normalizeHtmlText(text: string | null | undefined): string {
+  if (!text) return ''
+  return text.replace(/&nbsp;/g, ' ')
+}
+
+const openEdit = (article: Article) => {
     setMode('edit')
     setSelectedId(article.id_artikel)
     setSelectedArticle(article)
@@ -187,8 +192,8 @@ export function ManajemenKontenPage() {
       judul: article.judul ?? '',
       kategori: article.kategori ?? 'Tips & Panduan',
       author: article.author ?? '',
-      summary: article.summary ?? '',
-      isi_artikel: article.isi_artikel ?? '',
+      summary: normalizeHtmlText(article.summary),
+      isi_artikel: normalizeHtmlText(article.isi_artikel),
       status: article.status ?? 'draft',
     })
     setImageFile({ file: null, previewUrl: null })
