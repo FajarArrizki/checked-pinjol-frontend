@@ -25,7 +25,7 @@ export function ArticleCard({
 }: ArticleCardProps) {
   return (
     <div
-      className={`flex flex-col gap-4 p-4 bg-white border cursor-pointer hover:shadow-md transition-shadow ${className}`.trim()}
+      className={`flex flex-col gap-4 p-5 bg-white border cursor-pointer hover:shadow-md transition-shadow ${className}`.trim()}
       style={{
         borderRadius: '1.25rem',
         borderColor: tokens.colors.slate[200],
@@ -38,12 +38,12 @@ export function ArticleCard({
           src={imageUrl}
           alt={title}
           className="w-full aspect-[16/9] object-cover"
-          style={{ borderRadius: '0.75rem' }}
+          style={{ borderRadius: '0.875rem' }}
         />
       ) : (
         <div
           className="flex aspect-[16/9] w-full items-center justify-center"
-          style={{ borderRadius: '0.75rem', backgroundColor: tokens.colors.slate[100], color: tokens.colors.slate[400] }}
+          style={{ borderRadius: '0.875rem', backgroundColor: tokens.colors.slate[100], color: tokens.colors.slate[400] }}
           aria-hidden="true"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-10 w-10">
@@ -55,7 +55,7 @@ export function ArticleCard({
       )}
       <div className="flex flex-col gap-3">
         <span
-          className="inline-flex self-start px-3 py-1 text-xs font-bold border"
+          className="inline-flex self-start px-3 py-1 text-[13px] font-bold border"
           style={{
             borderRadius: tokens.radius.full,
             backgroundColor: tokens.colors.brand.soft,
@@ -65,7 +65,7 @@ export function ArticleCard({
         >
           {category}
         </span>
-        <h3 className="text-sm font-semibold leading-snug line-clamp-2" style={{ color: tokens.colors.slate[900] }}>
+        <h3 className="text-lg font-bold leading-snug line-clamp-2" style={{ color: tokens.colors.slate[900] }}>
           {title}
         </h3>
         {(author || publishedAt) && (
@@ -73,16 +73,16 @@ export function ArticleCard({
             {author ? `Oleh ${author}` : ''}{author && publishedAt ? ' • ' : ''}{publishedAt ? new Date(publishedAt).toLocaleDateString('id-ID') : ''}
           </p>
         )}
-        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: tokens.colors.slate[500] }}>
+        <p className="text-sm leading-relaxed line-clamp-2" style={{ color: tokens.colors.slate[500] }}>
           {excerpt}
         </p>
         <button
           onClick={onClick}
-          className="mt-1 self-start text-xs font-bold flex items-center gap-1 hover:opacity-80 transition-opacity"
+          className="mt-1 self-start text-sm font-bold flex items-center gap-1 hover:opacity-80 transition-opacity"
           style={{ color: articleCardConfig.readMore.color }}
         >
           Baca selengkapnya
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
         </button>

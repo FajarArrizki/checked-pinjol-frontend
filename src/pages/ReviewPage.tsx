@@ -74,7 +74,7 @@ export function ReviewPage() {
   return (
     <div className="min-h-screen bg-white">
       <AppNavbar onLogout={handleLogout} />
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-8">
+      <main className="flex w-full flex-col gap-6 px-8 py-8">
         <PageHeaderCard
           back={<BackLink toLabel="Homepage" to={paths.home} />}
           title="Tulis Ulasan Pinjol"

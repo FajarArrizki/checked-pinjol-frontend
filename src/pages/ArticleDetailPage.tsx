@@ -165,39 +165,48 @@ export function ArticleDetailPage() {
     <div className="min-h-screen bg-white">
       <AppNavbar onLogout={handleLogout} />
 
-      <main className="mx-auto w-full max-w-6xl flex flex-col gap-6 px-6 py-8">
+      {/* Menambahkan max-w-7xl mx-auto agar halaman tidak melebar tanpa batas di monitor ultra-wide */}
+      <main className="mx-auto max-w-7xl w-full flex flex-col gap-8 px-8 py-8">
         <PageHeaderCard
           back={<BackLink toLabel="Education" to={paths.education} />}
           title={article.title}
           description=""
         />
 
+        {/* 1. Menaikkan batas tinggi gambar hero sedikit agar lebih megah */}
         <img
           src={article.imageUrl}
           alt={article.title}
-          className="w-full object-cover max-h-[420px]"
-          style={{ borderRadius: tokens.radius.lg }}
+          className="w-full object-cover max-h-[480px]"
+          style={{ borderRadius: tokens.radius.xl }}
         />
 
-        <div className="flex items-start gap-10">
-          <div className="flex flex-col gap-6 flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: tokens.colors.slate[500] }}>
-              <span className="rounded-full px-3 py-1" style={{ background: tokens.colors.brand.soft, color: tokens.colors.slate[900] }}>{article.category}</span>
+        {/* Melebarkan jarak gap antara area baca utama dan sidebar kanan */}
+        <div className="flex items-start gap-12">
+          <div className="flex flex-col gap-8 flex-1 min-w-0">
+            
+            {/* 2. Sedikit penyesuaian gap meta-data artikel */}
+            <div className="flex flex-wrap items-center gap-4 text-sm" style={{ color: tokens.colors.slate[500] }}>
+              <span className="rounded-full px-3.5 py-1.5 font-medium" style={{ background: tokens.colors.brand.soft, color: tokens.colors.slate[900] }}>
+                {article.category}
+              </span>
               {article.author && <span>Oleh {article.author}</span>}
               {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString('id-ID')}</span>}
             </div>
 
+            {/* 3. Menaikkan font ringkasan ke text-base */}
             <div className="flex flex-col gap-3">
-              <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Ringkasan</h2>
-              <p className="max-w-[100ch] break-words text-sm leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
+              <h2 className="text-xl font-bold" style={{ color: tokens.colors.slate[900] }}>Ringkasan</h2>
+              <p className="max-w-[100ch] break-words text-base leading-relaxed" style={{ color: tokens.colors.slate[600] }}>
                 {article.excerpt}
               </p>
             </div>
 
+            {/* 4. Menaikkan isi artikel utama ke text-base (sebelumnya text-sm terlalu kecil untuk bacaan panjang) */}
             <div className="flex flex-col gap-3">
-              <h2 className="text-base font-bold" style={{ color: tokens.colors.slate[900] }}>Isi Artikel</h2>
+              <h2 className="text-xl font-bold" style={{ color: tokens.colors.slate[900] }}>Isi Artikel</h2>
               <div
-                className="prose max-w-[100ch] overflow-hidden break-words text-sm leading-relaxed prose-headings:mb-3 prose-headings:mt-6 prose-p:mb-4 prose-li:mb-2 prose-img:max-w-full prose-img:h-auto prose-video:max-w-full prose-video:h-auto prose-iframe:max-w-full prose-a:break-all prose-pre:max-w-full prose-pre:overflow-x-auto prose-table:block prose-table:max-w-full prose-table:overflow-x-auto [&_*]:max-w-full [&>h1:first-child]:hidden [&>h2:first-child]:hidden [&>h3:first-child]:hidden"
+                className="prose max-w-[100ch] overflow-hidden break-words text-base leading-relaxed prose-headings:mb-3 prose-headings:mt-6 prose-p:mb-4 prose-li:mb-2 prose-img:max-w-full prose-img:h-auto prose-video:max-w-full prose-video:h-auto prose-iframe:max-w-full prose-a:break-all prose-pre:max-w-full prose-pre:overflow-x-auto prose-table:block prose-table:max-w-full prose-table:overflow-x-auto [&_*]:max-w-full [&>h1:first-child]:hidden [&>h2:first-child]:hidden [&>h3:first-child]:hidden"
                 style={{ color: tokens.colors.slate[600] }}
                 dangerouslySetInnerHTML={{
                   __html: stripDuplicateArticleHeading(hasRichContent ? (article.content as string) : undefined, article.title),
@@ -205,7 +214,7 @@ export function ArticleDetailPage() {
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4 mt-2" style={{ borderColor: tokens.colors.slate[200] }}>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-5 mt-4" style={{ borderColor: tokens.colors.slate[200] }}>
               <Button variant="secondary" onClick={() => navigate(paths.education)}>
                 Kembali ke edukasi
               </Button>
@@ -215,8 +224,9 @@ export function ArticleDetailPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 w-72 shrink-0 sticky top-8">
-            <h2 className="text-base font-semibold" style={{ color: tokens.colors.slate[900] }}>Baca juga</h2>
+          {/* 5. Memperlebar pembungkus sidebar dari w-72 ke w-80 agar pas dengan porsi ArticleCard baru */}
+          <div className="flex flex-col gap-5 w-80 shrink-0 sticky top-8">
+            <h2 className="text-lg font-bold" style={{ color: tokens.colors.slate[900] }}>Baca juga</h2>
             {relatedArticles.map((related) => (
               <ArticleCard
                 key={related.id}
