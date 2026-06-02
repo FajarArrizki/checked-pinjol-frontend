@@ -46,15 +46,31 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
+const SIMULASI_STORAGE_KEY = 'checked-pinjol.simulasi'
+
+function loadSavedSimulations(): SavedSimulationItem[] {
+  try {
+    const raw = localStorage.getItem(SIMULASI_STORAGE_KEY)
+    if (!raw) return []
+    return JSON.parse(raw) as SavedSimulationItem[]
+  } catch {
+    return []
+  }
+}
+
+function saveSimulationsToStorage(items: SavedSimulationItem[]) {
+  localStorage.setItem(SIMULASI_STORAGE_KEY, JSON.stringify(items))
+}
+
 export function LoanSimulationPage() {
   const [loanAmount, setLoanAmount] = useState('')
   const [tenor, setTenor] = useState('30')
   const [tenorUnit, setTenorUnit] = useState<'hari' | 'bulan'>('hari')
-  const [dailyInterest, setDailyInterest] = useState('0.8')
+  const [dailyInterest, setDailyInterest] = useState('')
   const [adminFee, setAdminFee] = useState('')
   const [isAgreed, setIsAgreed] = useState(false)
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
-  const [savedSimulations, setSavedSimulations] = useState<SavedSimulationItem[]>([])
+  const [savedSimulations, setSavedSimulations] = useState<SavedSimulationItem[]>(loadSavedSimulations)
   const [result, setResult] = useState<null | {
     monthlyInstallment: string
     totalPayment: string
@@ -67,6 +83,7 @@ export function LoanSimulationPage() {
     total: string
   }>(null)
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<{ loanAmount?: string; tenor?: string; dailyInterest?: string }>({})
   const handleLogout = useLogoutRedirect()
   const { token } = useAuth()
   const tenorDays = resolveTenorDays(tenor, tenorUnit)
@@ -95,7 +112,15 @@ export function LoanSimulationPage() {
   }, [loanAmount, tenorDays, dailyInterest, adminFee])
 
   const handleSaveSimulation = () => {
-    if (!loanAmount || tenorDays <= 0) return
+    setFieldErrors({})
+    if (!loanAmount || tenorDays <= 0) {
+      setFieldErrors({ loanAmount: 'Jumlah pinjaman wajib diisi.' })
+      return
+    }
+    if (!tenor || Number(tenor) <= 0) {
+      setFieldErrors({ tenor: 'Tenor wajib diisi.' })
+      return
+    }
 
     const newItem: SavedSimulationItem = {
       id: Date.now().toString(),
@@ -108,8 +133,20 @@ export function LoanSimulationPage() {
       date: new Date().toLocaleDateString('id-ID'),
     }
 
-    setSavedSimulations((prev) => [newItem, ...prev].slice(0, 5))
+    setSavedSimulations((prev) => {
+      const next = [newItem, ...prev].slice(0, 5)
+      saveSimulationsToStorage(next)
+      return next
+    })
     setIsSaveModalOpen(true)
+  }
+
+  const handleDeleteSimulation = (id: string) => {
+    setSavedSimulations((prev) => {
+      const next = prev.filter((item) => item.id !== id)
+      saveSimulationsToStorage(next)
+      return next
+    })
   }
 
   const handleSaveToBackend = async () => {
@@ -129,6 +166,18 @@ export function LoanSimulationPage() {
   }
 
   const handleSimulate = async () => {
+    setFieldErrors({})
+
+    const next: typeof fieldErrors = {}
+    if (!loanAmount || Number(loanAmount) <= 0) next.loanAmount = 'Jumlah pinjaman wajib diisi.'
+    if (!tenor || Number(tenor) <= 0) next.tenor = 'Tenor wajib diisi.'
+    if (!dailyInterest || Number(dailyInterest) <= 0) next.dailyInterest = 'Bunga per hari wajib diisi.'
+
+    if (Object.keys(next).length > 0) {
+      setFieldErrors(next)
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -204,9 +253,11 @@ export function LoanSimulationPage() {
               prefix="Rp"
               inputMode="numeric"
               value={formatCurrencyInput(loanAmount)}
-              onChange={(event) => setLoanAmount(normalizeCurrencyInput(event.target.value))}
+              onChange={(event) => { setLoanAmount(normalizeCurrencyInput(event.target.value)); setFieldErrors((c) => ({ ...c, loanAmount: undefined })) }}
               placeholder="Masukkan jumlah pinjaman"
+              error={fieldErrors.loanAmount}
             />
+            <p className="-mt-3 text-xs text-slate-400">Masukkan jumlah pinjaman pokok yang ingin diajukan.</p>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>
@@ -216,8 +267,9 @@ export function LoanSimulationPage() {
                 <Input
                   inputMode="numeric"
                   value={tenor}
-                  onChange={(event) => setTenor(normalizeIntegerInput(event.target.value))}
+                  onChange={(event) => { setTenor(normalizeIntegerInput(event.target.value)); setFieldErrors((c) => ({ ...c, tenor: undefined })) }}
                   placeholder="Masukkan tenor"
+                  error={fieldErrors.tenor}
                 />
                 <div className="relative">
                   <select
@@ -249,8 +301,9 @@ export function LoanSimulationPage() {
               label="Bunga per Hari (%)"
               inputMode="decimal"
               value={dailyInterest}
-              onChange={(event) => setDailyInterest(event.target.value)}
+              onChange={(event) => { setDailyInterest(event.target.value); setFieldErrors((c) => ({ ...c, dailyInterest: undefined })) }}
               placeholder="Masukkan bunga per hari"
+              error={fieldErrors.dailyInterest}
             />
 
             <Input
@@ -261,6 +314,7 @@ export function LoanSimulationPage() {
               onChange={(event) => setAdminFee(normalizeCurrencyInput(event.target.value))}
               placeholder="Masukkan biaya admin"
             />
+            <p className="-mt-3 text-xs text-slate-400">Biaya tambahan yang dikenakan admin pinjol (jika ada).</p>
 
             <RiskLevelIndicator dailyInterest={Number(dailyInterest)} />
 
@@ -277,7 +331,7 @@ export function LoanSimulationPage() {
                 </span>
               </label>
 
-              <Button className="w-full py-3 font-semibold" disabled={!isAgreed || loading || !loanAmount || tenorDays <= 0} onClick={async () => { await handleSimulate(); await handleSaveToBackend() }}>
+              <Button className="w-full py-3 font-semibold" disabled={!isAgreed || loading} onClick={async () => { await handleSimulate(); await handleSaveToBackend() }}>
                 {loading ? 'Menghitung...' : 'Simulasikan Sekarang'}
               </Button>
             </div>
@@ -289,14 +343,13 @@ export function LoanSimulationPage() {
                 </label>
                 <button 
                   onClick={handleSaveSimulation}
-                  disabled={!loanAmount || tenorDays <= 0}
                   className="text-xs font-semibold text-brand-primary hover:underline"
                 >
                   + Simpan Sekarang
                 </button>
               </div>
               
-              <SavedSimulations simulations={savedSimulations} onReload={handleReloadSimulation} />
+              <SavedSimulations simulations={savedSimulations} onReload={handleReloadSimulation} onDelete={handleDeleteSimulation} />
             </div>
           </div>
 

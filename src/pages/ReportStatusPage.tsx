@@ -178,7 +178,7 @@ export function ReportStatusPage() {
                   }}
                 >
                   <option value="all">Semua Status</option>
-                  <option value="process">Diproses</option>
+                  <option value="diproses">Diproses</option>
                   <option value="selesai">Selesai</option>
                   <option value="ditolak">Ditolak</option>
                 </select>

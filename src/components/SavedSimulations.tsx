@@ -15,9 +15,10 @@ export type SavedSimulationItem = {
 type SavedSimulationsProps = {
   simulations: SavedSimulationItem[]
   onReload: (item: SavedSimulationItem) => void
+  onDelete?: (id: string) => void
 }
 
-export function SavedSimulations({ simulations, onReload }: SavedSimulationsProps) {
+export function SavedSimulations({ simulations, onReload, onDelete }: SavedSimulationsProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   if (simulations.length === 0) {
@@ -92,16 +93,25 @@ export function SavedSimulations({ simulations, onReload }: SavedSimulationsProp
                 </div>
               </div>
 
-              <button
-                onClick={() => onReload(item)}
-                className="shrink-0 px-4 py-2 text-xs font-bold transition-all active:scale-95"
-                style={{
-                  color: tokens.colors.slate[900],
-                  borderRadius: tokens.radius.lg
-                }}
-              >
-                Ulang
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  onClick={() => onDelete?.(item.id)}
+                  className="shrink-0 px-3 py-2 text-xs font-bold text-red-600 transition-all active:scale-95"
+                  style={{ borderRadius: tokens.radius.lg }}
+                >
+                  Hapus
+                </button>
+                <button
+                  onClick={() => onReload(item)}
+                  className="shrink-0 px-4 py-2 text-xs font-bold transition-all active:scale-95"
+                  style={{
+                    color: tokens.colors.slate[900],
+                    borderRadius: tokens.radius.lg
+                  }}
+                >
+                  Ulang
+                </button>
+              </div>
             </div>
           ))}
         </div>

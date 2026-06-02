@@ -240,15 +240,14 @@ export function RegulatorIncomingReportsPage() {
   if (!token) return null
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 p-[15px] overflow-y-auto custom-scrollbar">
-      <div>
-        <h1 className="pb-5 text-2xl font-semibold" style={{ color: tokens.colors.slate[700] }}>
-          Laporan Masuk
-        </h1>
+    <div className="w-full h-full flex flex-col p-[15px] overflow-y-auto custom-scrollbar">
+      <h1 className="pb-5 text-2xl font-semibold" style={{ color: tokens.colors.slate[700] }}>
+        Laporan Masuk
+      </h1>
 
-        {error ? <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
 
-        <TableList
+      <TableList
           title=""
           headerContent={
             <div className="flex flex-col gap-6">
@@ -329,7 +328,6 @@ export function RegulatorIncomingReportsPage() {
             </tr>
           ))}
         </TableList>
-      </div>
 
       <Modal
         isOpen={isDetailOpen}
