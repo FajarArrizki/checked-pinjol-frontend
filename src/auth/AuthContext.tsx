@@ -16,6 +16,7 @@ type AuthContextValue = {
   isAuthenticated: boolean
   login: (input: LoginInput, mode?: LoginMode) => Promise<AuthSession>
   establishSession: (session: AuthSession) => void
+  updateUser: (updates: Partial<AuthUser>) => void
   register: (input: RegisterInput) => Promise<AuthSession>
   logout: () => void
 }
@@ -62,6 +63,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return { token: session.token, user: session.user }
     }
 
+    function updateUser(updates: Partial<AuthUser>): void {
+      setStored((current) => {
+        if (!current) return current
+        const updated = { ...current, user: { ...current.user, ...updates } }
+        saveStoredAuth(updated)
+        return updated
+      })
+    }
+
     async function register(input: RegisterInput): Promise<AuthSession> {
       return registerUser(input)
     }
@@ -78,6 +88,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: Boolean(stored?.token && stored?.user),
       login,
       establishSession,
+      updateUser,
       register,
       logout,
     }

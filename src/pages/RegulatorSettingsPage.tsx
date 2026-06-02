@@ -43,7 +43,7 @@ type WeeklyRecapPreview = {
 type TwoFactorStep = 'qr' | 'otp' | 'success'
 
 export function RegulatorSettingsPage() {
-  const { token } = useAuth()
+  const { token, updateUser } = useAuth()
   const [fullName, setFullName] = useState('')
   const [initialFullName, setInitialFullName] = useState('')
   const [institutionEmail, setInstitutionEmail] = useState('')
@@ -250,8 +250,10 @@ export function RegulatorSettingsPage() {
         throw new Error(json?.message ?? 'Gagal menyimpan profil')
       }
 
-      setFullName(typeof json?.data?.nama === 'string' ? json.data.nama : fullName.trim())
-      setInitialFullName(typeof json?.data?.nama === 'string' ? json.data.nama : fullName.trim())
+      const savedName = typeof json?.data?.nama === 'string' ? json.data.nama : fullName.trim()
+      setFullName(savedName)
+      setInitialFullName(savedName)
+      updateUser({ name: savedName })
       setProfileMessage('Nama lengkap berhasil diperbarui')
     } catch (error) {
       setProfileMessage(error instanceof Error ? error.message : 'Gagal menyimpan profil')
