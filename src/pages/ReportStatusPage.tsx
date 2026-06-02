@@ -180,7 +180,7 @@ export function ReportStatusPage() {
                   <option value="all">Semua Status</option>
                   <option value="process">Diproses</option>
                   <option value="selesai">Selesai</option>
-                  <option value="terminate">Ditolak</option>
+                  <option value="ditolak">Ditolak</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
