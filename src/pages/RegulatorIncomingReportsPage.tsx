@@ -176,11 +176,13 @@ export function RegulatorIncomingReportsPage() {
     selesai: activeFilter === 'Selesai' ? reports.length : meta.total,
   }), [reports.length, activeFilter, meta.total])
 
-  const filters = [
-    'Semua',
-    `Diproses (${filterCounts.diproses})`,
-    `Selesai (${filterCounts.selesai})`,
-  ]
+  const filterKeys = ['Semua', 'Diproses', 'Selesai'] as const
+
+  const filterLabels: Record<string, string> = {
+    Semua: 'Semua',
+    Diproses: `Diproses (${filterCounts.diproses})`,
+    Selesai: `Selesai (${filterCounts.selesai})`,
+  }
 
   const totalPages = meta.total_pages
 
@@ -263,12 +265,12 @@ export function RegulatorIncomingReportsPage() {
               />
 
               <div className="flex items-center gap-2 flex-wrap">
-                {filters.map((filter) => (
+                {filterKeys.map((key) => (
                   <button
-                    key={filter}
-                    onClick={() => { setActiveFilter(filter); setCurrentPage(1) }}
+                    key={key}
+                    onClick={() => { setActiveFilter(key); setCurrentPage(1) }}
                   >
-                    <CategoryPill active={activeFilter === filter}>{filter}</CategoryPill>
+                    <CategoryPill active={activeFilter === key}>{filterLabels[key]}</CategoryPill>
                   </button>
                 ))}
               </div>

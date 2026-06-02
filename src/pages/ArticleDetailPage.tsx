@@ -178,7 +178,7 @@ export function ArticleDetailPage() {
           src={article.imageUrl}
           alt={article.title}
           className="w-full object-cover max-h-[480px]"
-          style={{ borderRadius: tokens.radius.xl }}
+          style={{ borderRadius: tokens.radius.lg }}
         />
 
         {/* Melebarkan jarak gap antara area baca utama dan sidebar kanan */}
