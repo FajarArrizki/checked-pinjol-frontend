@@ -156,7 +156,7 @@ export function RegulatorOverviewPage() {
     },
   ]
 
-  const filters = ['Semua', 'Diproses', 'Selesai']
+  const filters = ['Semua', 'Diproses', 'Selesai', 'Ditolak']
 
   const filteredReports = reports.filter((report) => {
     const matchesSearch =
@@ -166,6 +166,7 @@ export function RegulatorOverviewPage() {
     if (activeFilter === 'Semua') return matchesSearch
     if (activeFilter === 'Diproses') return matchesSearch && report.status === 'diproses'
     if (activeFilter === 'Selesai') return matchesSearch && report.status === 'selesai'
+    if (activeFilter === 'Ditolak') return matchesSearch && report.status === 'ditolak'
     return matchesSearch
   })
 

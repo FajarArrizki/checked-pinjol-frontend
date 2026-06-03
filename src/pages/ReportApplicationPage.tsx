@@ -121,9 +121,15 @@ export function ReportApplicationPage() {
     if (!appLink.trim()) {
       nextErrors.appLink = 'Tautan aplikasi wajib diisi.'
     } else {
+      const urlString = appLink.trim()
+      const hasProtocol = urlString.startsWith('http://') || urlString.startsWith('https://')
+      const domainPattern = /^(https?:\/\/)?([a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\/[\w\-\.~:/?#\[\]@!$&'()*+,;=]*)?$/
+      if (!domainPattern.test(urlString)) {
+        nextErrors.appLink = 'Format tautan aplikasi tidak valid.'
+        return nextErrors
+      }
       try {
-        const urlString = appLink.trim()
-        new URL(urlString.startsWith('http://') || urlString.startsWith('https://') ? urlString : `https://${urlString}`)
+        new URL(hasProtocol ? urlString : `https://${urlString}`)
       } catch {
         nextErrors.appLink = 'Format tautan aplikasi tidak valid.'
       }
@@ -212,9 +218,6 @@ export function ReportApplicationPage() {
       form.append('email_pelapor', email)
       
       let finalAppLink = appLink.trim()
-      if (finalAppLink && !finalAppLink.startsWith('http://') && !finalAppLink.startsWith('https://')) {
-        finalAppLink = `https://${finalAppLink}`
-      }
       form.append('tautan_aplikasi', finalAppLink)
       selectedRegulationIds.forEach((id) => form.append('regulasi_ids[]', String(id)))
       evidenceFiles.forEach((file) => {
@@ -275,7 +278,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setReporterName(event.target.value)}
             error={errors.reporterName}
           />
-          <p className="-mt-3 text-xs text-slate-400">Nama pelapor wajib diisi.</p>
+          {!errors.reporterName && <p className="-mt-3 text-xs text-slate-400">Nama pelapor wajib diisi.</p>}
 
           <Input
             label="Nama Aplikasi"
@@ -285,7 +288,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setAppName(event.target.value)}
             error={errors.appName}
           />
-          <p className="-mt-3 text-xs text-slate-400">Nama aplikasi minimal 5 karakter.</p>
+          {!errors.appName && <p className="-mt-3 text-xs text-slate-400">Nama aplikasi minimal 5 karakter.</p>}
 
           <Input
             label="No HP / Kontak"
@@ -297,7 +300,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setContact(normalizeDigits(event.target.value).slice(0, 12))}
             error={errors.contact}
           />
-          <p className="-mt-3 text-xs text-slate-400">{phoneRequirementText}</p>
+          {!errors.contact && <p className="-mt-3 text-xs text-slate-400">{phoneRequirementText}</p>}
 
           <Input
             label="Email"
@@ -307,7 +310,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setEmail(event.target.value)}
             error={errors.email}
           />
-          <p className="-mt-3 text-xs text-slate-400">{emailRequirementText}</p>
+          {!errors.email && <p className="-mt-3 text-xs text-slate-400">{emailRequirementText}</p>}
 
           <Input
             label="Tautan Aplikasi"
@@ -317,7 +320,7 @@ export function ReportApplicationPage() {
             onChange={(event) => setAppLink(event.target.value)}
             error={errors.appLink}
           />
-          <p className="-mt-3 text-xs text-slate-400">Tautan wajib diisi dengan URL yang valid.</p>
+          {!errors.appLink && <p className="-mt-3 text-xs text-slate-400">Tautan wajib diisi dengan URL yang valid.</p>}
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium" style={{ color: tokens.colors.slate[600] }}>

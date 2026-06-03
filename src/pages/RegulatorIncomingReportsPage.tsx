@@ -92,7 +92,9 @@ export function RegulatorIncomingReportsPage() {
       ? 'diproses'
       : (params?.active ?? activeFilter) === 'Selesai'
         ? 'selesai'
-        : ''
+        : (params?.active ?? activeFilter) === 'Ditolak'
+          ? 'ditolak'
+          : ''
 
     const response = await getAdminReports(token, {
       page: params?.page ?? currentPage,
@@ -171,12 +173,13 @@ export function RegulatorIncomingReportsPage() {
     }
   }, [token, selectedReportId])
 
-  const filterKeys = ['Semua', 'Diproses', 'Selesai'] as const
+  const filterKeys = ['Semua', 'Diproses', 'Selesai', 'Ditolak'] as const
 
   const filterLabels: Record<string, string> = {
     Semua: 'Semua',
     Diproses: `Diproses (${meta.status_counts?.diproses ?? 0})`,
     Selesai: `Selesai (${meta.status_counts?.selesai ?? 0})`,
+    Ditolak: `Ditolak (${meta.status_counts?.ditolak ?? 0})`,
   }
 
   const totalPages = meta.total_pages
